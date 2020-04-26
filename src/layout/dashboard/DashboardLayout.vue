@@ -3,12 +3,15 @@
     <side-bar>
       <template slot="links">
         <sidebar-link to="/dashboard" name="Dashboard" icon="ti-panel"/>
-        <sidebar-link to="/stats" name="User Profile" icon="ti-user"/>
-        <sidebar-link to="/table-list" name="Table List" icon="ti-view-list-alt"/>
-        <sidebar-link to="/typography" name="Typography" icon="ti-text"/>
-        <sidebar-link to="/icons" name="Icons" icon="ti-pencil-alt2"/>
-        <sidebar-link to="/maps" name="Map" icon="ti-map"/>
-        <sidebar-link to="/notifications" name="Notifications" icon="ti-bell"/>
+        <sidebar-link to="/outputs" name="Outputs" icon="ti-search"/>
+        <sidebar-link to="/fileheaders" name="File Headers" icon="ti-files"/>
+        <sidebar-link to="/about" name="About" icon="ti-info"/>
+        <sidebar-link to="/stats" name="Template" icon="ti-user"/>
+        <sidebar-link to="/table-list" name="Template" icon="ti-view-list-alt"/>
+        <sidebar-link to="/typography" name="Template" icon="ti-text"/>
+        <sidebar-link to="/icons" name="Template" icon="ti-pencil-alt2"/>
+        <sidebar-link to="/maps" name="Template" icon="ti-map"/>
+        <sidebar-link to="/notifications" name="Template" icon="ti-bell"/>
       </template>
       <mobile-menu>
         <li class="nav-item">

@@ -4,6 +4,11 @@ import NotFound from "@/pages/NotFoundPage.vue";
 
 // Admin pages
 import Dashboard from "@/pages/Dashboard.vue";
+import Outputs from "@/pages/Outputs.vue";
+import FileHeaders from "@/pages/FileHeaders.vue";
+import About from "@/pages/About.vue";
+
+// Template pages
 import UserProfile from "@/pages/UserProfile.vue";
 import Notifications from "@/pages/Notifications.vue";
 import Icons from "@/pages/Icons.vue";
@@ -21,6 +26,21 @@ const routes = [
         path: "dashboard",
         name: "dashboard",
         component: Dashboard
+      },
+      {
+        path: "outputs",
+        name: "outputs",
+        component: Outputs
+      },
+      {
+        path: "fileheaders",
+        name: "fileheaders",
+        component: FileHeaders
+      },
+      {
+        path: "about",
+        name: "about",
+        component: About
       },
       {
         path: "stats",

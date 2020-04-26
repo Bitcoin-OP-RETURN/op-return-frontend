@@ -28,8 +28,8 @@
     "sass-loader": "^6.0.7",
     "vue-template-compiler": "^2.6.10"
   },
-  "description": "A sample admin dashboard based on paper dashboard UI template",
-  "author": "cristian.jora <joracristi@gmail.com>",
+  "description": "The front-end application of a OP_RETURN analysis project",
+  "author": "Johannes Mols <jmols17@student.aau.dk>",
   "engines": {
     "node": ">= 8.1.4",
     "npm": ">= 5.0.0"
