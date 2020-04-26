@@ -25,7 +25,7 @@
       <div class="col-12">
         <card title="Standard scripts" subTitle="Usage of scripts used on the entire Bitcoin blockchain">
           <div class="card-body">
-            <p></p>
+            <apexchart height="200" type="area" :options="scriptChartOptions" :series="scriptChartSeries"></apexchart>
           </div>
           <hr>
           <div class="stats">
@@ -73,14 +73,42 @@ export default {
   },
   data() {
     return {
+      scriptChartOptions: {
+        chart: {
+          stacked: true,
+          stackType: "normal"
+        },
+        xaxis: {
+          type: "datetime"
+        },
+        yAxis: {
+          opposite: false
+        },
+        stroke: {
+          curve: "smooth"
+        },
+        dataLabels: {
+          enabled: false
+        }
+      },
+      scriptChartSeries: [
+        {
+          name: 'test',
+          data: [[1324508400000, 34], [1324594800000, 54], [1326236400000, 43]]
+        },
+        {
+          name: 'test 2',
+          data: [[1324508400000, 23], [1324594800000, 105], [1326236400000, 69]]
+        }
+      ],
       statsCards: [
         {
           type: "warning",
-          icon: "ti-server",
+          icon: "ti-harddrive",
           title: "Metadata",
           value: "43GB",
           footerText: "Since 2009",
-          footerIcon: "ti-reload"
+          footerIcon: "ti-calendar"
         },
         {
           type: "success",
@@ -100,7 +128,7 @@ export default {
         },
         {
           type: "info",
-          icon: "ti-twitter-alt",
+          icon: "ti-server",
           title: "Average Output Size",
           value: "38.4 Bytes",
           footerText: "Updated now",
