@@ -25,7 +25,11 @@
       <div class="col-12">
         <card title="Standard scripts" subTitle="Usage of scripts used on the entire Bitcoin blockchain">
           <div class="card-body">
-            <apexchart height="200" type="area" :options="scriptChartOptions" :series="scriptChartSeries"></apexchart>
+            <highcharts
+              v-if="scriptChartSeries.length > 0"
+              :options="scriptChartOptions"
+              :constructor-type="'stockChart'"
+            ></highcharts>
           </div>
           <hr>
           <div class="stats">
@@ -64,7 +68,17 @@
 
 <script>
 import { Card, StatsCard } from "@/components/index";
-import Chartist from 'chartist';
+import Highcharts from "highcharts";
+import stockInit from "highcharts/modules/stock";
+import exporting from "highcharts/modules/exporting";
+import exportData from "highcharts/modules/export-data";
+import axios from "axios";
+import api from "../assets/config/api.js";
+import moment from "moment";
+
+stockInit(Highcharts);
+exporting(Highcharts);
+exportData(Highcharts);
 
 export default {
   components: {
@@ -75,32 +89,102 @@ export default {
     return {
       scriptChartOptions: {
         chart: {
-          stacked: true,
-          stackType: "normal"
-        },
-        xaxis: {
-          type: "datetime"
+          type: "area",
+          height: 500,
+          spacingLeft: 20,
+          spacingRight: 20,
+          zoomType: "x"
         },
         yAxis: {
-          opposite: false
+          allowDecimals: false,
+          labels: {
+            formatter: function() {
+              return this.value + "%";
+            }
+          },
+          plotLines: [
+            {
+              value: 0,
+              width: 2,
+              color: "silver"
+            }
+          ],
+          reversedStacks: false
         },
-        stroke: {
-          curve: "smooth"
+        xAxis: {
+          type: "datetime",
+          setExtremes: function() {}
         },
-        dataLabels: {
+        navigator: {
           enabled: false
-        }
-      },
-      scriptChartSeries: [
-        {
-          name: 'test',
-          data: [[1324508400000, 34], [1324594800000, 54], [1326236400000, 43]]
         },
-        {
-          name: 'test 2',
-          data: [[1324508400000, 23], [1324594800000, 105], [1326236400000, 69]]
-        }
-      ],
+        scrollbar: {
+          enabled: false,
+          liveRedraw: false
+        },
+        plotOptions: {
+          series: {
+            stacking: "normal" // "normal" for normal stacking
+          }
+        },
+        legend: {
+          enabled: true,
+          floating: false
+        },
+        exporting: {
+          enabled: true,
+          buttons: {
+            contextButton: {
+              text: "",
+              menuItems: [
+                "printChart",
+                "separator",
+                "downloadPNG",
+                "downloadJPEG",
+                "downloadPDF",
+                "downloadSVG",
+                "separator",
+                "downloadCSV",
+                "downloadXLS"
+              ]
+            }
+          }
+        },
+        tooltip: {
+          valueDecimals: 0,
+          formatter: function() {
+            var labels = [];
+            var sum = 0;
+            this.points.forEach(el => (sum += Math.ceil(el.y)));
+
+            this.points.forEach(el =>
+              labels.push(
+                el.series.name +
+                  ": " +
+                  Math.ceil(el.y).toLocaleString() +
+                  " (" +
+                  (el.y > 0 ? ((el.y / sum) * 100).toFixed(2) : "0") +
+                  "%)"
+              )
+            );
+
+            return [
+              moment(this.x)
+                .format("dddd, MMM D, YYYY")
+                .toString()
+            ].concat(labels);
+          }
+        },
+        rangeSelector: {
+          inputEnabled: true,
+          allButtonsEnabled: true
+        },
+        credits: {
+          enabled: false
+        },
+        series: []
+      },
+      scriptChartSeries: [],
       statsCards: [
         {
           type: "warning",
@@ -136,6 +220,95 @@ export default {
         }
       ]
     };
+  },
+  async mounted() {
+    try {
+      let response = await axios.get(api.server + "/frequency-analysis");
+      if (response.status == 200) {
+        this.prepareData(response.data);
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  },
+  methods: {
+    prepareData(data) {
+      if (!data) {
+        return;
+      }
+
+      var series = [];
+
+      if ("nulldata" in data[0]) {
+        series.push({
+          name: "Nulldata (OP_RETURN)",
+          data: data.map(item => [
+            this.convertToUnixTimestamp(item.dataday),
+            item.nulldata
+          ])
+        });
+      }
+
+      if ("p2pk" in data[0]) {
+        series.push({
+          name: "P2PK",
+          data: data.map(item => [
+            this.convertToUnixTimestamp(item.dataday),
+            item.p2pk
+          ])
+        });
+      }
+
+      if ("p2pkh" in data[0]) {
+        series.push({
+          name: "P2PKH",
+          data: data.map(item => [
+            this.convertToUnixTimestamp(item.dataday),
+            item.p2pkh
+          ])
+        });
+      }
+
+      if ("p2ms" in data[0]) {
+        series.push({
+          name: "P2MS",
+          data: data.map(item => [
+            this.convertToUnixTimestamp(item.dataday),
+            item.p2ms
+          ])
+        });
+      }
+
+      if ("p2sh" in data[0]) {
+        series.push({
+          name: "P2SH",
+          data: data.map(item => [
+            this.convertToUnixTimestamp(item.dataday),
+            item.p2sh
+          ])
+        });
+      }
+
+      if ("unknowntype" in data[0]) {
+        series.push({
+          name: "Unknown",
+          data: data.map(item => [
+            this.convertToUnixTimestamp(item.dataday),
+            item.unknowntype
+          ])
+        });
+      }
+
+      this.scriptChartSeries = series;
+    },
+    convertToUnixTimestamp(stringDate) {
+      return new Date(stringDate).getTime();
+    }
+  },
+  watch: {
+    scriptChartSeries(newValue) {
+      this.scriptChartOptions.series = JSON.parse(JSON.stringify(newValue));
+    }
   }
 };
 </script>
