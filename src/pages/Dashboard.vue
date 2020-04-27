@@ -21,7 +21,6 @@
 
     <!--Charts-->
     <div class="row">
-
       <div class="col-12">
         <card title="Standard script outputs per day" subTitle="Usage of standard scripts in outputs on the entire Bitcoin blockchain">
           <div class="card-body">
@@ -37,12 +36,21 @@
           </div>
         </card>
       </div>
+    </div>
 
+    <div class="row">
       <div class="col-md-6 col-12">
         <card title="OP_RETURN Protocols" subTitle="Publicly known protocols using the operator">
           <div class="card-body">
-            <p></p>
+            <highcharts
+              v-if="protocolChartSeries.length > 0"
+              :options="protocolChartOptions"
+            ></highcharts>
           </div>
+          <vue-slider
+            v-model="sliderValue"
+            v-bind="sliderOptions">
+          </vue-slider>
           <hr>
           <div class="stats">
             <i class="ti-reload"></i> Updated just now
@@ -65,8 +73,8 @@
           </div>
         </card>
       </div>
-
     </div>
+
   </div>
 </template>
 
@@ -79,6 +87,8 @@ import exportData from "highcharts/modules/export-data";
 import axios from "axios";
 import api from "../assets/config/api.js";
 import moment from "moment";
+import VueSlider from 'vue-slider-component'
+import 'vue-slider-component/theme/default.css'
 
 stockInit(Highcharts);
 exporting(Highcharts);
@@ -87,16 +97,23 @@ exportData(Highcharts);
 export default {
   components: {
     Card,
-    StatsCard
+    StatsCard,
+    VueSlider
   },
   data() {
     return {
+      sliderValue: [Math.floor(new Date().getTime() / 1000)],
+      sliderOptions: {
+        min: Math.floor(new Date("2013-01-01").getTime() / 1000),
+        max: Math.floor(new Date().getTime() / 1000)
+      },
       scriptChartOptions: {
         chart: {
           type: "area",
           height: 400,
           zoomType: "x",
-          styledMode: false
+          spacingLeft: 20,
+          spacingRight: 20
         },
         colors: ["#03A9F4", "#E91E63", "#8bc34a", "#795548", "#ff5722", "#ffc107"],
         yAxis: {
@@ -219,7 +236,9 @@ export default {
         chart: {
           type: "line",
           height: 400,
-          zoomType: "x"
+          zoomType: "x",
+          spacingLeft: 20,
+          spacingRight: 20
         },
         colors: ["#03A9F4"],
         title: {
@@ -306,6 +325,62 @@ export default {
         series: []
       },
       sizeChartSeries: [],
+      protocolChartOptions: {
+        chart: {
+          type: "pie",
+          spacingLeft: 20,
+          spacingRight: 20
+        },
+        colors: ["#03A9F4", "#E91E63", "#8bc34a", "#795548", "#ff5722", "#ffc107"],
+        title: {
+          text: ""
+        },
+        legend: {
+          enabled: false
+        },
+        accessibility: {
+          point: {
+            valueSuffix: "%"
+          }
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: "pointer",
+            dataLabels: {
+              enabled: true,
+              format: "<b>{point.name}</b>: {point.percentage:.1f}% ({point.y})"
+            },
+            showInLegend: true
+          }
+        },
+        exporting: {
+          enabled: true,
+          buttons: {
+            contextButton: {
+              text: "",
+              menuItems: [
+                "printChart",
+                "separator",
+                "downloadPNG",
+                "downloadJPEG",
+                "downloadPDF",
+                "downloadSVG",
+                "separator",
+                "downloadCSV",
+                "downloadXLS"
+              ]
+            }
+          }
+        },
+        tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.1f}% ({point.y})</b>'
+        },
+        credits: {
+          enabled: false
+        }
+      },
+      protocolChartSeries: [],
       statsCards: [
         {
           type: "warning",
@@ -364,6 +439,14 @@ export default {
       } else {
         console.log(statsResponse.statusText);
       }
+
+      let protocolResponse = await axios.get(api.server + "/protocol-analysis");
+      if (protocolResponse.status == 200) {
+        this.prepareProtocolChartData(protocolResponse.data);
+      } else {
+        console.log(protocolResponse.statusText);
+      }
+
     } catch (err) {
       console.log(err)
     }
@@ -485,6 +568,28 @@ export default {
 
       this.sizeChartSeries = series;
     },
+    prepareProtocolChartData(data) {
+      if (!data) {
+        return;
+      }
+
+      var series = [{
+          name: "Protocols",
+          colorByPoint: true,
+          data: []
+        }];
+
+      for (var prop in data[data.length - 1]) {
+        if (!(prop == "id" || prop == "dataday")) {
+          series[0]["data"].push({
+            name: prop,
+            y: data[data.length - 1][prop]
+          });
+        }
+      };
+
+      this.protocolChartSeries = series;
+    },
     formatBytes(bytes, decimals = 4) {
         if (bytes === 0) return '0 Bytes';
 
@@ -503,6 +608,9 @@ export default {
     },
     sizeChartSeries(newValue) {
       this.sizeChartOptions.series = newValue;
+    },
+    protocolChartSeries(newValue) {
+      this.protocolChartOptions.series = newValue;
     }
   }
 };
