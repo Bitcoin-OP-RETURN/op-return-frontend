@@ -47,10 +47,6 @@
               :options="protocolChartOptions"
             ></highcharts>
           </div>
-          <vue-slider
-            v-model="sliderValue"
-            v-bind="sliderOptions">
-          </vue-slider>
           <hr>
           <div class="stats">
             <i class="ti-reload"></i> Updated just now
@@ -87,8 +83,6 @@ import exportData from "highcharts/modules/export-data";
 import axios from "axios";
 import api from "../assets/config/api.js";
 import moment from "moment";
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/default.css'
 
 stockInit(Highcharts);
 exporting(Highcharts);
@@ -97,8 +91,7 @@ exportData(Highcharts);
 export default {
   components: {
     Card,
-    StatsCard,
-    VueSlider
+    StatsCard
   },
   data() {
     return {
@@ -331,7 +324,7 @@ export default {
           spacingLeft: 20,
           spacingRight: 20
         },
-        colors: ["#03A9F4", "#E91E63", "#8bc34a", "#795548", "#ff5722", "#ffc107"],
+        //colors: ["#03A9F4", "#E91E63", "#8bc34a", "#795548", "#ff5722", "#ffc107"],
         title: {
           text: ""
         },
@@ -355,7 +348,7 @@ export default {
           }
         },
         exporting: {
-          enabled: true,
+          enabled: false,
           buttons: {
             contextButton: {
               text: "",
@@ -378,6 +371,24 @@ export default {
         },
         credits: {
           enabled: false
+        },
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 550
+              },
+              chartOptions: {
+                plotOptions: {
+                  pie: {
+                    dataLabels: {
+                      enabled: false
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       },
       protocolChartSeries: [],
@@ -473,7 +484,7 @@ export default {
       this.statsCards[1].value = stats["total_outputs"].toLocaleString();
       this.statsCards[1].footerText = "Last output " + moment(new Date(stats["last_output_time"] * 1000)).fromNow();
       this.statsCards[2].value = stats["recent_outputs"];
-      this.statsCards[3].value = stats["recent_size"].toFixed(2) + " Bytes";
+      this.statsCards[3].value = stats["recent_size"].toLocaleString(undefined, {'minimumFractionDigits':2,'maximumFractionDigits':2}) + " Bytes";
     },
     prepareFrequencyChartData(data) {
       if (!data) {
@@ -599,7 +610,7 @@ export default {
 
         const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)).toLocaleString() + ' ' + sizes[i];
     }
   },
   watch: {
