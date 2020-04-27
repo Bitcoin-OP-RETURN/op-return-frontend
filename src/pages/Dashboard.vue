@@ -23,7 +23,7 @@
     <div class="row">
 
       <div class="col-12">
-        <card title="Standard scripts" subTitle="Usage of scripts used on the entire Bitcoin blockchain">
+        <card title="Standard scripts" subTitle="Usage of standard scripts in outputs on the entire Bitcoin blockchain">
           <div class="card-body">
             <highcharts
               v-if="scriptChartSeries.length > 0"
@@ -53,7 +53,11 @@
       <div class="col-6">
         <card title="OP_RETURN Output Size" subTitle="The average size of outputs using the operator">
           <div class="card-body">
-            <p></p>
+            <highcharts
+              v-if="sizeChartSeries.length > 0"
+              :options="sizeChartOptions"
+              :constructor-type="'stockChart'"
+            ></highcharts>
           </div>
           <hr>
           <div class="stats">
@@ -90,12 +94,11 @@ export default {
       scriptChartOptions: {
         chart: {
           type: "area",
-          height: 500,
-          spacingLeft: 20,
-          spacingRight: 20,
+          height: 400,
           zoomType: "x",
           styledMode: false
         },
+        colors: ["#03A9F4", "#E91E63", "#8bc34a", "#795548", "#ff5722", "#ffc107"],
         yAxis: {
           allowDecimals: false,
           labels: {
@@ -212,6 +215,97 @@ export default {
         series: []
       },
       scriptChartSeries: [],
+      sizeChartOptions: {
+        chart: {
+          type: "line",
+          height: 400,
+          zoomType: "x"
+        },
+        colors: ["#03A9F4"],
+        title: {
+          text: ""
+        },
+        yAxis: {
+          allowDecimals: false,
+          labels: {
+            formatter: function() {
+              return this.value + " bytes";
+            }
+          },
+          plotLines: [
+            {
+              value: 0,
+              width: 2,
+              color: "silver"
+            }
+          ],
+          reversedStacks: false
+        },
+        xAxis: {
+          type: "datetime",
+          setExtremes: function() {}
+        },
+        navigator: {
+          enabled: false
+        },
+        legend: {
+          enabled: false
+        },
+        exporting: {
+          enabled: true,
+          buttons: {
+            contextButton: {
+              text: "",
+              menuItems: [
+                "printChart",
+                "separator",
+                "downloadPNG",
+                "downloadJPEG",
+                "downloadPDF",
+                "downloadSVG",
+                "separator",
+                "downloadCSV",
+                "downloadXLS"
+              ]
+            }
+          }
+        },
+        tooltip: {
+          valueDecimals: 2
+        },
+        rangeSelector: {
+          enabled: true,
+          inputEnabled: false,
+          allButtonsEnabled: true
+        },
+        scrollbar: {
+          enabled: false,
+          liveRedraw: false
+        },
+        credits: {
+          enabled: false
+        },
+        loading: {
+          hideDuration: 1000,
+          showDuration: 1000
+        },
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 350
+              },
+              chartOptions: {
+                rangeSelector: {
+                  enabled: false
+                }
+              }
+            }
+          ]
+        },
+        series: []
+      },
+      sizeChartSeries: [],
       statsCards: [
         {
           type: "warning",
@@ -250,11 +344,18 @@ export default {
   },
   async mounted() {
     try {
-      let response = await axios.get(api.server + "/frequency-analysis");
-      if (response.status == 200) {
-        this.prepareData(response.data);
+      let frequencyResponse = await axios.get(api.server + "/frequency-analysis");
+      if (frequencyResponse.status == 200) {
+        this.prepareFrequencyChartData(frequencyResponse.data);
       } else {
-        console.log(response.statusText);
+        console.log(frequencyResponse.statusText);
+      }
+
+      let sizeResponse = await axios.get(api.server + "/size-analysis");
+      if (sizeResponse.status == 200) {
+        this.prepareSizeChartData(sizeResponse.data);
+      } else {
+        console.log(sizeResponse.statusText);
       }
     } catch (err) {
       console.log(err)
@@ -273,7 +374,7 @@ export default {
         this.scriptChartOptions.yAxis.labels.formatter = function() { return this.value; }
       }
     },
-    prepareData(data) {
+    prepareFrequencyChartData(data) {
       if (!data) {
         return;
       }
@@ -341,11 +442,38 @@ export default {
       }
 
       this.scriptChartSeries = series;
+    },
+    prepareSizeChartData(data) {
+      if (!data) {
+        return;
+      }
+
+      var self = this;
+
+      var series = [
+        {
+          name: "Average Size",
+          data: data.reduce(function(result, item) {
+            if (item.outputs > 0) {
+              result.push([
+                self.convertToUnixTimestamp(item.dataday),
+                item.avgsize / item.outputs
+              ]);
+            }
+            return result;
+          }, [])
+        }
+      ];
+
+      this.sizeChartSeries = series;
     }
   },
   watch: {
     scriptChartSeries(newValue) {
-      this.scriptChartOptions.series = JSON.parse(JSON.stringify(newValue));
+      this.scriptChartOptions.series = newValue;
+    },
+    sizeChartSeries(newValue) {
+      this.sizeChartOptions.series = newValue;
     }
   }
 };
