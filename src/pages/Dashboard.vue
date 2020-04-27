@@ -485,7 +485,7 @@ export default {
 
       this.sizeChartSeries = series;
     },
-    formatBytes(bytes, decimals = 2) {
+    formatBytes(bytes, decimals = 4) {
         if (bytes === 0) return '0 Bytes';
 
         const k = 1024;
