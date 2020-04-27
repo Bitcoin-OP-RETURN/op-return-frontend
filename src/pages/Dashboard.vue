@@ -38,7 +38,7 @@
         </card>
       </div>
 
-      <div class="col-6">
+      <div class="col-md-6 col-12">
         <card title="OP_RETURN Protocols" subTitle="Publicly known protocols using the operator">
           <div class="card-body">
             <p></p>
@@ -50,7 +50,7 @@
         </card>
       </div>
 
-      <div class="col-6">
+      <div class="col-md-6 col-12">
         <card title="OP_RETURN Output Size" subTitle="The average size of outputs using the operator">
           <div class="card-body">
             <highcharts
