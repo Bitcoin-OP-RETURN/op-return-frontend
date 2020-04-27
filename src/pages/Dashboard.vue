@@ -23,7 +23,7 @@
     <div class="row">
 
       <div class="col-12">
-        <card title="Standard scripts" subTitle="Usage of standard scripts in outputs on the entire Bitcoin blockchain">
+        <card title="Standard script outputs per day" subTitle="Usage of standard scripts in outputs on the entire Bitcoin blockchain">
           <div class="card-body">
             <highcharts
               v-if="scriptChartSeries.length > 0"
@@ -311,7 +311,7 @@ export default {
           type: "warning",
           icon: "ti-harddrive",
           title: "Metadata",
-          value: "43GB",
+          value: "",
           footerText: "Since 2009",
           footerIcon: "ti-calendar"
         },
@@ -319,25 +319,25 @@ export default {
           type: "success",
           icon: "ti-wallet",
           title: "Total Outputs",
-          value: "40.000.000",
-          footerText: "Since 2009",
-          footerIcon: "ti-calendar"
+          value: "",
+          footerText: "",
+          footerIcon: "ti-reload"
         },
         {
           type: "danger",
           icon: "ti-pulse",
           title: "New Outputs",
-          value: "1337",
-          footerText: "Today",
+          value: "",
+          footerText: "Yesterday",
           footerIcon: "ti-timer"
         },
         {
           type: "info",
           icon: "ti-server",
           title: "Average Output Size",
-          value: "38.4 Bytes",
-          footerText: "Updated now",
-          footerIcon: "ti-reload"
+          value: "",
+          footerText: "Yesterday",
+          footerIcon: "ti-timer"
         }
       ]
     };
@@ -357,6 +357,13 @@ export default {
       } else {
         console.log(sizeResponse.statusText);
       }
+
+      let statsResponse = await axios.get(api.server + "/tx-outputs/stats")
+      if (statsResponse.status == 200) {
+        this.updateStatsCards(statsResponse.data);
+      } else {
+        console.log(statsResponse.statusText);
+      }
     } catch (err) {
       console.log(err)
     }
@@ -373,6 +380,17 @@ export default {
         this.scriptChartOptions.plotOptions.series.stacking = "normal";
         this.scriptChartOptions.yAxis.labels.formatter = function() { return this.value; }
       }
+    },
+    updateStatsCards(stats) {
+      if (!stats || this.statsCards.length != 4) {
+        return;
+      }
+
+      this.statsCards[0].value = this.formatBytes(stats["total_size"]);
+      this.statsCards[1].value = stats["total_outputs"].toLocaleString();
+      this.statsCards[1].footerText = "Last output " + moment(new Date(stats["last_output_time"] * 1000)).fromNow();
+      this.statsCards[2].value = stats["recent_outputs"];
+      this.statsCards[3].value = stats["recent_size"].toFixed(2) + " Bytes";
     },
     prepareFrequencyChartData(data) {
       if (!data) {
@@ -466,6 +484,17 @@ export default {
       ];
 
       this.sizeChartSeries = series;
+    },
+    formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
   },
   watch: {
