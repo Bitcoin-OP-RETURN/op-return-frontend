@@ -93,13 +93,14 @@ export default {
           height: 500,
           spacingLeft: 20,
           spacingRight: 20,
-          zoomType: "x"
+          zoomType: "x",
+          styledMode: false
         },
         yAxis: {
           allowDecimals: false,
           labels: {
             formatter: function() {
-              return this.value + "%";
+              return this.value;
             }
           },
           plotLines: [
@@ -124,12 +125,13 @@ export default {
         },
         plotOptions: {
           series: {
-            stacking: "normal" // "normal" for normal stacking
+            stacking: "normal" // "normal" for normal stacking, "percent" for 100% stacking
           }
         },
         legend: {
           enabled: true,
-          floating: false
+          floating: false,
+          layout: "horizontal"
         },
         exporting: {
           enabled: true,
@@ -147,6 +149,12 @@ export default {
                 "downloadCSV",
                 "downloadXLS"
               ]
+            },
+            customButton: {
+              text: "Switch View",
+              align: "right",
+              verticalAlign: "top",
+              onclick: this.changeScriptChartView
             }
           }
         },
@@ -176,11 +184,30 @@ export default {
           }
         },
         rangeSelector: {
-          inputEnabled: true,
+          enabled: true,
+          inputEnabled: false,
           allButtonsEnabled: true
         },
         credits: {
           enabled: false
+        },
+        loading: {
+          hideDuration: 1000,
+          showDuration: 1000
+        },
+        responsive: {
+          rules: [
+            {
+              condition: {
+                maxWidth: 500
+              },
+              chartOptions: {
+                rangeSelector: {
+                  enabled: false
+                }
+              }
+            }
+          ]
         },
         series: []
       },
@@ -226,12 +253,26 @@ export default {
       let response = await axios.get(api.server + "/frequency-analysis");
       if (response.status == 200) {
         this.prepareData(response.data);
+      } else {
+        console.log(response.statusText);
       }
     } catch (err) {
       console.log(err)
     }
   },
   methods: {
+    convertToUnixTimestamp(stringDate) {
+      return new Date(stringDate).getTime();
+    },
+    changeScriptChartView() {
+      if (this.scriptChartOptions.plotOptions.series.stacking == "normal") {
+        this.scriptChartOptions.plotOptions.series.stacking = "percent";
+        this.scriptChartOptions.yAxis.labels.formatter = function() { return this.value + "%"; }
+      } else {
+        this.scriptChartOptions.plotOptions.series.stacking = "normal";
+        this.scriptChartOptions.yAxis.labels.formatter = function() { return this.value; }
+      }
+    },
     prepareData(data) {
       if (!data) {
         return;
@@ -241,7 +282,7 @@ export default {
 
       if ("nulldata" in data[0]) {
         series.push({
-          name: "Nulldata (OP_RETURN)",
+          name: "OP_RETURN",
           data: data.map(item => [
             this.convertToUnixTimestamp(item.dataday),
             item.nulldata
@@ -300,9 +341,6 @@ export default {
       }
 
       this.scriptChartSeries = series;
-    },
-    convertToUnixTimestamp(stringDate) {
-      return new Date(stringDate).getTime();
     }
   },
   watch: {
