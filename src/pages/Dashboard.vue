@@ -32,7 +32,7 @@
           </div>
           <hr>
           <div class="stats">
-            <i class="ti-reload"></i> Updated just now
+            <i class="ti-reload"></i> {{chartsFooterText}}
           </div>
         </card>
       </div>
@@ -49,7 +49,7 @@
           </div>
           <hr>
           <div class="stats">
-            <i class="ti-reload"></i> Updated just now
+            <i class="ti-reload"></i> {{chartsFooterText}}
           </div>
         </card>
       </div>
@@ -65,7 +65,7 @@
           </div>
           <hr>
           <div class="stats">
-            <i class="ti-reload"></i> Updated just now
+            <i class="ti-reload"></i> {{chartsFooterText}}
           </div>
         </card>
       </div>
@@ -95,6 +95,12 @@ export default {
   },
   data() {
     return {
+      refreshHandler: 0,
+      timers: {
+        totalOutputs: null,
+        charts: null
+      },
+      chartsFooterText: "Updated just now",
       sliderValue: [Math.floor(new Date().getTime() / 1000)],
       sliderOptions: {
         min: Math.floor(new Date("2013-01-01").getTime() / 1000),
@@ -460,7 +466,18 @@ export default {
 
     } catch (err) {
       console.log(err)
+    } finally {
+      this.timers.charts = new Date();
+      var self = this;
+      this.refreshHandler = window.setInterval(() => {
+        self.updateTimers();
+        self.refreshStats();
+      }, 30000);
     }
+  },
+  beforeDestroy() {
+    window.clearInterval(this.refreshHandler);
+    this.refreshHandler = 0;
   },
   methods: {
     convertToUnixTimestamp(stringDate) {
@@ -475,6 +492,14 @@ export default {
         this.scriptChartOptions.yAxis.labels.formatter = function() { return this.value; }
       }
     },
+    async refreshStats() {
+      let statsResponse = await axios.get(api.server + "/tx-outputs/stats")
+      if (statsResponse.status == 200) {
+        this.updateStatsCards(statsResponse.data);
+      } else {
+        console.log(statsResponse.statusText);
+      }
+    },
     updateStatsCards(stats) {
       if (!stats || this.statsCards.length != 4) {
         return;
@@ -485,6 +510,17 @@ export default {
       this.statsCards[1].footerText = "Last output " + moment(new Date(stats["last_output_time"] * 1000)).fromNow();
       this.statsCards[2].value = stats["recent_outputs"];
       this.statsCards[3].value = stats["recent_size"].toLocaleString(undefined, {'minimumFractionDigits':2,'maximumFractionDigits':2}) + " Bytes";
+
+      this.timers.totalOutputs = new Date(stats["last_output_time"] * 1000);
+    },
+    updateTimers() {
+      if (this.timers.totalOutputs) {
+        this.statsCards[1].footerText = "Last output " + moment(this.timers.totalOutputs).fromNow();
+      }
+
+      if (this.timers.charts) {
+        this.chartsFooterText = "Updated " + moment(this.timers.charts).fromNow();
+      }
     },
     prepareFrequencyChartData(data) {
       if (!data) {
