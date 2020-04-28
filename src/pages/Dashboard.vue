@@ -136,6 +136,30 @@ export default {
           onClick: () => {
             return [moment().subtract(7, 'days').toDate(), moment().toDate()];
           }
+        },
+        {
+          text: "Last Month",
+          onClick: () => {
+            return [moment().subtract(1, 'months').toDate(), moment().toDate()];
+          }
+        },
+        {
+          text: "Last Year",
+          onClick: () => {
+            return [moment().subtract(1, 'years').toDate(), moment().toDate()];
+          }
+        },
+        {
+          text: "YTD",
+          onClick: () => {
+            return [moment().startOf('year').toDate(), moment().toDate()];
+          }
+        },
+        {
+          text: "All",
+          onClick: () => {
+            return [moment("2009-01-01").toDate(), moment().toDate()];
+          }
         }
       ],
       refreshHandler: 0,
@@ -390,7 +414,7 @@ export default {
             cursor: "pointer",
             dataLabels: {
               enabled: true,
-              format: "<b>{point.name}</b>: {point.percentage:.1f}% ({point.y})"
+              format: "<b>{point.name}</b>: {point.percentage:.1f}% ({point.y:,.0f})"
             },
             showInLegend: true
           }
