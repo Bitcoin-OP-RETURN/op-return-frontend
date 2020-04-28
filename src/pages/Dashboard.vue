@@ -67,7 +67,7 @@
               valueType="date"
               format="YYYY-MM-DD"
               range
-              range-separator=" ~ "
+              range-separator=" to "
               :show-week-number="false"
               :confirm="false"
               :clearable="false"
@@ -150,7 +150,7 @@ export default {
           }
         },
         {
-          text: "YTD",
+          text: "Year To Date",
           onClick: () => {
             return [moment().startOf('year').toDate(), moment().toDate()];
           }
