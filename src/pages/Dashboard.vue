@@ -28,11 +28,8 @@
               v-if="scriptChartSeries.length > 0"
               :options="scriptChartOptions"
               :constructor-type="'stockChart'"
+              ref="scriptChart"
             ></highcharts>
-          </div>
-          <hr>
-          <div class="stats">
-            <i class="ti-reload"></i> {{chartsFooterText}}
           </div>
         </card>
       </div>
@@ -40,16 +37,43 @@
 
     <div class="row">
       <div class="col-md-6 col-12">
-        <card title="OP_RETURN Protocols" subTitle="Publicly known protocols using the operator">
+        <card>
+          <template slot="header">
+            <div class="row">
+              <div class="col-lg-9 col-12">
+                <h4 class="card-title">OP_RETURN Protocols</h4>
+                <p class="card-category">Publicly known protocols using the operator</p>
+              </div>
+              <div class="col-lg-3 col-12">
+                <div class="date-picker">
+                  <!--Element can be added to the top right corner here-->
+                </div>
+              </div>
+            </div>
+          </template>
+
           <div class="card-body">
             <highcharts
               v-if="protocolChartSeries.length > 0"
               :options="protocolChartOptions"
+              ref="protocolChart"
             ></highcharts>
           </div>
           <hr>
-          <div class="stats">
-            <i class="ti-reload"></i> {{chartsFooterText}}
+          <div class="stats date-picker">
+            <date-picker
+              v-model="datePickerRange"
+              type="date"
+              valueType="date"
+              format="YYYY-MM-DD"
+              range
+              range-separator=" ~ "
+              :show-week-number="false"
+              :confirm="false"
+              :clearable="false"
+              :shortcuts="datePickerShortcuts"
+              @input="updateProtocolChart"
+            ></date-picker>
           </div>
         </card>
       </div>
@@ -61,16 +85,12 @@
               v-if="sizeChartSeries.length > 0"
               :options="sizeChartOptions"
               :constructor-type="'stockChart'"
+              ref="sizeChart"
             ></highcharts>
-          </div>
-          <hr>
-          <div class="stats">
-            <i class="ti-reload"></i> {{chartsFooterText}}
           </div>
         </card>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -83,6 +103,8 @@ import exportData from "highcharts/modules/export-data";
 import axios from "axios";
 import api from "../assets/config/api.js";
 import moment from "moment";
+import DatePicker from "vue2-datepicker";
+import 'vue2-datepicker/index.css';
 
 stockInit(Highcharts);
 exporting(Highcharts);
@@ -91,25 +113,41 @@ exportData(Highcharts);
 export default {
   components: {
     Card,
-    StatsCard
+    StatsCard,
+    DatePicker
   },
   data() {
     return {
+      protocolChartRawData: null,
+      datePickerRange: [
+        moment().subtract(7, 'days').toDate(),
+        new Date()
+      ],
+      datePickerShortcuts:
+      [
+        {
+          text: "Yesterday",
+          onClick: () => {
+            return [moment().subtract(1, 'days').toDate(), moment().toDate()];
+          }
+        },
+        {
+          text: "Last Week",
+          onClick: () => {
+            return [moment().subtract(7, 'days').toDate(), moment().toDate()];
+          }
+        }
+      ],
       refreshHandler: 0,
       timers: {
         totalOutputs: null,
         charts: null
       },
       chartsFooterText: "Updated just now",
-      sliderValue: [Math.floor(new Date().getTime() / 1000)],
-      sliderOptions: {
-        min: Math.floor(new Date("2013-01-01").getTime() / 1000),
-        max: Math.floor(new Date().getTime() / 1000)
-      },
       scriptChartOptions: {
         chart: {
           type: "area",
-          height: 400,
+          //height: 400,
           zoomType: "x",
           spacingLeft: 20,
           spacingRight: 20
@@ -234,7 +272,7 @@ export default {
       sizeChartOptions: {
         chart: {
           type: "line",
-          height: 400,
+          //height: 400,
           zoomType: "x",
           spacingLeft: 20,
           spacingRight: 20
@@ -328,9 +366,13 @@ export default {
         chart: {
           type: "pie",
           spacingLeft: 20,
-          spacingRight: 20
+          spacingRight: 20,
+          events: {
+            redraw: function() {
+              // do something on redraw
+            }
+          }
         },
-        //colors: ["#03A9F4", "#E91E63", "#8bc34a", "#795548", "#ff5722", "#ffc107"],
         title: {
           text: ""
         },
@@ -435,6 +477,8 @@ export default {
     };
   },
   async mounted() {
+    var self = this;
+
     try {
       let frequencyResponse = await axios.get(api.server + "/frequency-analysis");
       if (frequencyResponse.status == 200) {
@@ -459,7 +503,8 @@ export default {
 
       let protocolResponse = await axios.get(api.server + "/protocol-analysis");
       if (protocolResponse.status == 200) {
-        this.prepareProtocolChartData(protocolResponse.data);
+        self.protocolChartRawData = protocolResponse.data;
+        this.prepareProtocolChartData(this.protocolChartRawData);
       } else {
         console.log(protocolResponse.statusText);
       }
@@ -626,16 +671,35 @@ export default {
           data: []
         }];
 
-      for (var prop in data[data.length - 1]) {
-        if (!(prop == "id" || prop == "dataday")) {
+      // add all props to the series with an initial value of 0
+      for (var propName in data[0]) {
+        if (!(propName == "id" || propName == "dataday")) {
           series[0]["data"].push({
-            name: prop,
-            y: data[data.length - 1][prop]
+            name: propName,
+            y: 0
           });
         }
-      };
+      }
+
+      data.forEach(day => {
+        var dataday = moment(day["dataday"]);
+        if (dataday.isSameOrAfter(moment(this.datePickerRange[0]), 'day') && dataday.isSameOrBefore(moment(this.datePickerRange[1]), 'day')) {
+          for (var propName in day) {
+            if (!(propName == "id" || propName == "dataday")) {
+              series[0]["data"].find(obj => { return obj.name == propName }).y += day[propName];
+            }
+          }
+        }
+      });
 
       this.protocolChartSeries = series;
+    },
+    updateProtocolChart(newDateRange) {
+      if (newDateRange.length !== 2) {
+        return;
+      }
+
+      this.prepareProtocolChartData(this.protocolChartRawData);
     },
     formatBytes(bytes, decimals = 4) {
         if (bytes === 0) return '0 Bytes';
@@ -652,16 +716,31 @@ export default {
   watch: {
     scriptChartSeries(newValue) {
       this.scriptChartOptions.series = newValue;
+
+      if (this.$refs.scriptChart) {
+        this.$refs.scriptChart.chart.update(this.sizeChartOptions);
+      }
     },
     sizeChartSeries(newValue) {
       this.sizeChartOptions.series = newValue;
+
+      if (this.$refs.sizeChart) {
+        this.$refs.sizeChart.chart.update(this.sizeChartOptions);
+      }
     },
     protocolChartSeries(newValue) {
       this.protocolChartOptions.series = newValue;
+
+      if (this.$refs.protocolChart) {
+        this.$refs.protocolChart.chart.update(this.protocolChartOptions);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.date-picker * {
+  width: 100%;
+}
 </style>
