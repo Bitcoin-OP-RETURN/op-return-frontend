@@ -1,6 +1,14 @@
 <template>
   <div>
 
+    <StatisticsCards />
+
+    <div class="row">
+      <div class="col-12">
+        <FrequencyChart />
+      </div>
+    </div>
+
     <!--Stats cards-->
     <div class="row">
       <div class="col-md-6 col-xl-3" v-for="stats in statsCards" :key="stats.title">
@@ -95,6 +103,9 @@
 </template>
 
 <script>
+import StatisticsCards from "@/components/Dashboard/StatisticsCards";
+import FrequencyChart from "@/components/Dashboard/FrequencyChart";
+
 import { Card, StatsCard } from "@/components/index";
 import Highcharts from "highcharts";
 import stockInit from "highcharts/modules/stock";
@@ -112,6 +123,8 @@ exportData(Highcharts);
 
 export default {
   components: {
+    StatisticsCards,
+    FrequencyChart,
     Card,
     StatsCard,
     DatePicker
@@ -483,7 +496,7 @@ export default {
         },
         {
           type: "danger",
-          icon: "fas fa-plus-circle",
+          icon: "fas fa-plus-square",
           title: "New Outputs",
           value: "",
           footerText: "Yesterday",
