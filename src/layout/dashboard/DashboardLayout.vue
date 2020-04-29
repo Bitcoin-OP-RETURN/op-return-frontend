@@ -2,7 +2,7 @@
   <div class="wrapper">
     <side-bar>
       <template slot="links">
-        <sidebar-link to="/dashboard" name="Dashboard" icon="fas fa-chart-line"/> <!--fa fa-line-chart-->
+        <sidebar-link to="/dashboard" name="Dashboard" icon="fas fa-chart-area"/>
         <sidebar-link to="/outputs" name="Outputs" icon="fas fa-search"/>
         <sidebar-link to="/fileheaders" name="File Headers" icon="far fa-file"/>
         <sidebar-link to="/about" name="About" icon="fas fa-info-circle"/>

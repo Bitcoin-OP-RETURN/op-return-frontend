@@ -467,7 +467,7 @@ export default {
       statsCards: [
         {
           type: "warning",
-          icon: "ti-harddrive",
+          icon: "fas fa-hdd",
           title: "Metadata",
           value: "",
           footerText: "Since 2009",
@@ -475,7 +475,7 @@ export default {
         },
         {
           type: "success",
-          icon: "ti-wallet",
+          icon: "fas fa-database",
           title: "Total Outputs",
           value: "",
           footerText: "",
@@ -483,7 +483,7 @@ export default {
         },
         {
           type: "danger",
-          icon: "ti-pulse",
+          icon: "fas fa-plus-circle",
           title: "New Outputs",
           value: "",
           footerText: "Yesterday",
@@ -491,7 +491,7 @@ export default {
         },
         {
           type: "info",
-          icon: "ti-server",
+          icon: "fas fa-chart-line",
           title: "Average Output Size",
           value: "",
           footerText: "Yesterday",
