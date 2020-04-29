@@ -7,7 +7,9 @@
 			<h2>Oops! Nothing was found</h2>
 			<p>The page you are looking for might have been removed had its name changed or is temporarily unavailable. <a href="#/dashboard">Return to homepage</a></p>
 			<div class="notfound-social">
-				<a href="https://github.com/johannesmols/op-return-frontend" target="_blank"><i class="fa fa-github"></i></a>
+				<a href="https://github.com/johannesmols/op-return-frontend" target="_blank"><i class="fab fa-github"></i></a>
+        <a href="https://stackoverflow.com/users/2102106/johannes-mols" target="_blank"><i class="fab fa-stack-overflow"></i></a>
+        <a href="https://www.linkedin.com/in/johannes-mols/" target="_blank"><i class="fab fa-linkedin"></i></a>
 			</div>
 		</div>
 	</div>

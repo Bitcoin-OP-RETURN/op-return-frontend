@@ -1,12 +1,12 @@
 <template>
     <card title="Standard script outputs per day" subTitle="Usage of standard scripts in outputs on the entire Bitcoin blockchain">
         <div class="card-body">
-        <highcharts
-            v-if="scriptChartSeries.length > 0"
-            :options="scriptChartOptions"
-            :constructor-type="'stockChart'"
-            ref="scriptChart"
-        ></highcharts>
+            <highcharts
+                v-if="scriptChartSeries.length > 0"
+                :options="scriptChartOptions"
+                :constructor-type="'stockChart'"
+                ref="scriptChart"
+            ></highcharts>
         </div>
     </card>
 </template>
