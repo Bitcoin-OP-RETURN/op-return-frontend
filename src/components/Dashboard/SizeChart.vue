@@ -34,7 +34,7 @@ export default {
             sizeChartOptions: {
                 chart: {
                     type: "line",
-                    //height: 400,
+                    height: 467,
                     zoomType: "x",
                     spacingLeft: 20,
                     spacingRight: 20
