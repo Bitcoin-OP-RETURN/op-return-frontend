@@ -1,5 +1,4 @@
 <template>
-  <h1>File Headers</h1>
 </template>
 
 <script>
