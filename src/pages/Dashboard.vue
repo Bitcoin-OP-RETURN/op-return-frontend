@@ -471,7 +471,7 @@ export default {
           title: "Metadata",
           value: "",
           footerText: "Since 2009",
-          footerIcon: "ti-calendar"
+          footerIcon: "far fa-calendar-alt"
         },
         {
           type: "success",
@@ -479,7 +479,7 @@ export default {
           title: "Total Outputs",
           value: "",
           footerText: "",
-          footerIcon: "ti-reload"
+          footerIcon: "fas fa-sync-alt"
         },
         {
           type: "danger",
@@ -487,7 +487,7 @@ export default {
           title: "New Outputs",
           value: "",
           footerText: "Yesterday",
-          footerIcon: "ti-timer"
+          footerIcon: "far fa-clock"
         },
         {
           type: "info",
@@ -495,7 +495,7 @@ export default {
           title: "Average Output Size",
           value: "",
           footerText: "Yesterday",
-          footerIcon: "ti-timer"
+          footerIcon: "far fa-clock"
         }
       ]
     };
