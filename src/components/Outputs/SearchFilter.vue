@@ -1,5 +1,7 @@
 <template>
-    <b-form-input placeholder='Try "bitcoin", "marry me", etc.'/>
+    <div>
+        <b-form-input placeholder='Try "bitcoin", "marry me", etc.'/>
+    </div>
 </template>
 
 <script>

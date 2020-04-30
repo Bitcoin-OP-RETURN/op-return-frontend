@@ -5,8 +5,8 @@ import GlobalDirectives from "./globalDirectives";
 import "es6-promise/auto";
 
 //css assets
-import "@/assets/sass/paper-dashboard.scss";
-import "bootstrap/dist/css/bootstrap.css"; // loading bootstrap after paper dashboard to override some of the styling that is not desired here
+import "bootstrap/dist/css/bootstrap.css";
+//import "@/assets/sass/paper-dashboard.scss"; // Don't import it here or it will override all bootstrap styles everywhere
 import "@/assets/css/themify-icons.css";
 
 export default {
