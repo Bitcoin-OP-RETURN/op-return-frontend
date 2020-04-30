@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import "@/assets/sass/paper-dashboard.scss";
 import StatisticsCards from "@/components/Dashboard/StatisticsCards";
 import FrequencyChart from "@/components/Dashboard/FrequencyChart";
 import ProtocolChart from "@/components/Dashboard/ProtocolChart";
@@ -43,5 +42,6 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+
 </style>

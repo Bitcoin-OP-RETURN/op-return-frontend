@@ -1,17 +1,17 @@
 .form-control::-moz-placeholder {
-  @include placeholder($medium-gray, 1);
+  @include placeholder($muted-color, 1);
 }
 
 .form-control:-moz-placeholder {
-  @include placeholder($medium-gray, 1);
+  @include placeholder($muted-color, 1);
 }
 
 .form-control::-webkit-input-placeholder {
-  @include placeholder($medium-gray, 1);
+  @include placeholder($muted-color, 1);
 }
 
 .form-control:-ms-input-placeholder {
-  @include placeholder($medium-gray, 1);
+  @include placeholder($muted-color, 1);
 }
 
 .form-control {
@@ -25,7 +25,7 @@
   @include box-shadow(none);
 
   &:focus {
-    background-color: $white-bg;
+    background-color: $gray-input-bg;
     @include box-shadow(none);
     outline: 0 !important;
   }
