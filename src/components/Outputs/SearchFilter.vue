@@ -1,7 +1,7 @@
 <template>
     <b-form>
         <b-input-group>
-            <b-form-input class="search-input" :placeholder="inputPlaceholder"  /> <!-- class="border-input" -->
+            <b-form-input class="search-input border-input" :placeholder="inputPlaceholder"  /> <!-- class="border-input" -->
             <b-input-group-append>
                 <b-button class="btn-search no-text-transform" variant="success">Search</b-button>
             </b-input-group-append>
