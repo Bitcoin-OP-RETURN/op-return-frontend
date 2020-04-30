@@ -14,7 +14,7 @@
             >
                 {{ minDate.toLocaleDateString() }}
 
-                <b-modal id="modal-min-date" centered ok-only title="Choose a starting date">
+                <b-modal id="modal-min-date" centered ok-only size="sm" title="Choose a starting date">
                     <date-picker
                         class="date-picker"
                         v-model="minDate"
@@ -37,7 +37,7 @@
             >
                 {{ maxDate.toLocaleDateString() }}
 
-                <b-modal id="modal-max-date" centered ok-only title="Choose an ending date">
+                <b-modal id="modal-max-date" centered ok-only size="sm" title="Choose an ending date">
                     <date-picker
                         class="date-picker"
                         v-model="maxDate"
@@ -56,26 +56,57 @@
             <b-button
                 class="btn no-text-transform"
                 variant="outline-primary"
-                @click="encodingClicked">
-                    {{ encodingButtonTexts[encodedInput ? 1 : 0] }}
+                @click="encodingClicked"
+            >
+                {{ encodingButtonTexts[encodedInput ? 1 : 0] }}
             </b-button>
 
             <b-button
                 class="btn no-text-transform"
                 variant="outline-primary"
-                @click="sortOrderClicked">
-                    {{ sortOrderButtonTexts[sortOrderDescending ? 1 : 0] }}
-            </b-button>
-            <b-button
-                class="btn no-text-transform"
-                variant="outline-primary">
-                    {{ protocolSelections }}
+                @click="sortOrderClicked"
+            >
+                {{ sortOrderButtonTexts[sortOrderDescending ? 1 : 0] }}
             </b-button>
 
             <b-button
                 class="btn no-text-transform"
-                variant="outline-primary">
-                    {{ fileheaderSelections }}
+                variant="outline-primary"
+                v-b-modal.modal-protocols
+            >
+                {{ protocolSelectionButtonText }}
+
+                <b-modal id="modal-protocols" centered ok-only size="sm" scrollable title="Select Protocols">
+                    <b-form-checkbox
+                        v-for="protocol in protocolSelectionOptions"
+                        v-model="protocolSelectionSelected"
+                        :key="protocol.value"
+                        :value="protocol.value"
+
+                    >
+                        {{ protocol.text }}
+                    </b-form-checkbox>
+                </b-modal>
+            </b-button>
+
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary"
+                v-b-modal.modal-fileheaders
+            >
+                {{ fileheaderSelectionButtonText }}
+
+                <b-modal id="modal-fileheaders" centered ok-only size="sm" scrollable title="Select File Headers">
+                    <b-form-checkbox
+                        v-for="fileheader in fileheaderSelectionOptions"
+                        v-model="fileheaderSelectionSelected"
+                        :key="fileheader.value"
+                        :value="fileheader.value"
+
+                    >
+                        {{ fileheader.text }}
+                    </b-form-checkbox>
+                </b-modal>
             </b-button>
         </b-button-group>
     </b-form>
@@ -85,6 +116,8 @@
 import moment from "moment";
 import DatePicker from "vue2-datepicker";
 import 'vue2-datepicker/index.css';
+import protocols from "@/assets/config/protocols";
+import fileheaders from "@/assets/config/fileheaders";
 
 export default {
     components: {
@@ -92,7 +125,7 @@ export default {
     },
     data() {
         return {
-            inputPlaceholders: ['Try with a transaction hash, or search terms like "bitcoin", "marry me", etc.', 'Try "bitcoin", "marry me", etc.'],
+            inputPlaceholders: ['Try with a transaction or block hash, or search terms like "bitcoin", "marry me", etc.', 'Try "bitcoin", "marry me", etc.'],
             inputPlaceholder: null,
             minDate: new Date("2009-01-01"),
             maxDate: new Date(),
@@ -100,8 +133,12 @@ export default {
             encodingButtonTexts: ["Hex", "Encoded"],
             sortOrderDescending: true,
             sortOrderButtonTexts: ["Ascending", "Descending"],
-            protocolSelections: "All Protocols",
-            fileheaderSelections: "All File Headers"
+            protocolSelectionButtonText: "All Protocols",
+            protocolSelectionSelected: [],
+            protocolSelectionOptions: protocols.protocols,
+            fileheaderSelectionButtonText: "All File Headers",
+            fileheaderSelectionSelected: [],
+            fileheaderSelectionOptions: fileheaders.fileheaders
         }
     },
     mounted() {
@@ -111,7 +148,7 @@ export default {
     },
     methods: {
         windowWidthChanged(event) {
-            if (document.documentElement.clientWidth < 540) {
+            if (document.documentElement.clientWidth < 600) {
                 this.inputPlaceholder = this.inputPlaceholders[1];
             } else {
                 this.inputPlaceholder = this.inputPlaceholders[0];
@@ -122,6 +159,26 @@ export default {
         },
         sortOrderClicked() {
             this.sortOrderDescending = !this.sortOrderDescending;
+        }
+    },
+    watch: {
+        protocolSelectionSelected(newValue) {
+            if (newValue.length == 1) {
+                this.protocolSelectionButtonText = "1 Protocol";
+            } else if (newValue.length > 1) {
+                this.protocolSelectionButtonText = newValue.length + " Protocols";
+            } else {
+                this.protocolSelectionButtonText = "All Protocols";
+            }
+        },
+        fileheaderSelectionSelected(newValue) {
+            if (newValue.length == 1) {
+                this.fileheaderSelectionButtonText = "1 File Header";
+            } else if (newValue.length > 1) {
+                this.fileheaderSelectionButtonText = newValue.length + " File Headers";
+            } else {
+                this.fileheaderSelectionButtonText = "All File Headers";
+            }
         }
     }
 }
