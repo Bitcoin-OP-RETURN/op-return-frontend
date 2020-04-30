@@ -9,14 +9,48 @@
         <b-button-group class="btn-group">
             <b-button
                 class="btn no-text-transform"
-                variant="outline-primary">
-                    {{ minDate.format("YYYY-MM-DD") }}
+                variant="outline-primary"
+                v-b-modal.modal-min-date
+            >
+                {{ minDate.toLocaleDateString() }}
+
+                <b-modal id="modal-min-date" centered ok-only title="Choose a starting date">
+                    <date-picker
+                        class="date-picker"
+                        v-model="minDate"
+                        type="date"
+                        valueType="date"
+                        inline
+                        :default-value="new Date('2009-01-01')"
+                        :partial-update="true"
+                        :show-week-number="false"
+                        :confirm="false"
+                        :clearable="false"
+                    ></date-picker>
+                </b-modal>
             </b-button>
 
             <b-button
                 class="btn no-text-transform"
-                variant="outline-primary">
-                    {{ maxDate.format("YYYY-MM-DD") }}
+                variant="outline-primary"
+                v-b-modal.modal-max-date
+            >
+                {{ maxDate.toLocaleDateString() }}
+
+                <b-modal id="modal-max-date" centered ok-only title="Choose an ending date">
+                    <date-picker
+                        class="date-picker"
+                        v-model="maxDate"
+                        type="date"
+                        valueType="date"
+                        inline
+                        :default-value="new Date()"
+                        :partial-update="true"
+                        :show-week-number="false"
+                        :confirm="false"
+                        :clearable="false"
+                    ></date-picker>
+                </b-modal>
             </b-button>
 
             <b-button
@@ -49,17 +83,19 @@
 
 <script>
 import moment from "moment";
+import DatePicker from "vue2-datepicker";
+import 'vue2-datepicker/index.css';
 
 export default {
     components: {
-
+        DatePicker
     },
     data() {
         return {
             inputPlaceholders: ['Try with a transaction hash, or search terms like "bitcoin", "marry me", etc.', 'Try "bitcoin", "marry me", etc.'],
             inputPlaceholder: null,
-            minDate: moment("2009-01-01"),
-            maxDate: moment(),
+            minDate: new Date("2009-01-01"),
+            maxDate: new Date(),
             encodedInput: true,
             encodingButtonTexts: ["Hex", "Encoded"],
             sortOrderDescending: true,
@@ -126,5 +162,11 @@ export default {
         margin-bottom: 5px;
     }
   }
+}
+
+.date-picker {
+    left: 50%;
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
 }
 </style>
