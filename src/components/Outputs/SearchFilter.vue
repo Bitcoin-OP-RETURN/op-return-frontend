@@ -1,5 +1,5 @@
 <template>
-    <b-form>
+    <b-form class="px-1">
         <b-input-group>
             <b-form-input class="search-input border-input" :placeholder="inputPlaceholder"  /> <!-- class="border-input" -->
             <b-input-group-append>
@@ -7,12 +7,42 @@
             </b-input-group-append>
         </b-input-group>
         <b-button-group class="btn-group">
-            <b-button class="btn no-text-transform" variant="outline-primary">{{ minDate.format("YYYY-MM-DD") }}</b-button>
-            <b-button class="btn no-text-transform" variant="outline-primary">{{ maxDate.format("YYYY-MM-DD") }}</b-button>
-            <b-button class="btn no-text-transform" variant="outline-primary">{{ encodingButtonTexts[encodedInput ? 1 : 0] }}</b-button>
-            <b-button class="btn no-text-transform" variant="outline-primary">{{ sortOrderButtonTexts[sortOrderDescending ? 1 : 0] }}</b-button>
-            <b-button class="btn no-text-transform" variant="outline-primary">{{ protocolSelections }}</b-button>
-            <b-button class="btn no-text-transform" variant="outline-primary">{{ fileheaderSelections }}</b-button>
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary">
+                    {{ minDate.format("YYYY-MM-DD") }}
+            </b-button>
+
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary">
+                    {{ maxDate.format("YYYY-MM-DD") }}
+            </b-button>
+
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary"
+                @click="encodingClicked">
+                    {{ encodingButtonTexts[encodedInput ? 1 : 0] }}
+            </b-button>
+
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary"
+                @click="sortOrderClicked">
+                    {{ sortOrderButtonTexts[sortOrderDescending ? 1 : 0] }}
+            </b-button>
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary">
+                    {{ protocolSelections }}
+            </b-button>
+
+            <b-button
+                class="btn no-text-transform"
+                variant="outline-primary">
+                    {{ fileheaderSelections }}
+            </b-button>
         </b-button-group>
     </b-form>
 </template>
@@ -50,6 +80,12 @@ export default {
             } else {
                 this.inputPlaceholder = this.inputPlaceholders[0];
             }
+        },
+        encodingClicked() {
+            this.encodedInput = !this.encodedInput;
+        },
+        sortOrderClicked() {
+            this.sortOrderDescending = !this.sortOrderDescending;
         }
     }
 }
