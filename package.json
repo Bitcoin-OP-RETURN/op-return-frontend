@@ -21,6 +21,7 @@
     "vue": "^2.6.10",
     "vue-analytics": "^5.22.1",
     "vue-clickaway": "^2.1.0",
+    "vue-good-table": "^2.19.1",
     "vue-notifyjs": "^0.3.0",
     "vue-router": "^3.0.1",
     "vue2-datepicker": "^3.5.0"
