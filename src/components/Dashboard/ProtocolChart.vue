@@ -10,6 +10,7 @@
         <hr>
         <div class="stats date-picker">
             <date-picker
+                ref="datepicker"
                 v-model="datePickerRange"
                 type="date"
                 valueType="date"
@@ -21,6 +22,7 @@
                 :clearable="false"
                 :shortcuts="datePickerShortcuts"
                 @input="updateProtocolChart"
+                @focus="showDatePicker"
             ></date-picker>
         </div>
     </card>
@@ -222,6 +224,9 @@ export default {
             }
 
             this.prepareProtocolChartData(this.protocolChartRawData);
+        },
+        showDatePicker() {
+            this.$refs.datepicker.blur(); // don't show keyboard on mobile (https://stackoverflow.com/a/8075384/2102106)
         }
     },
     watch: {
