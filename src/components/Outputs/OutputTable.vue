@@ -1,14 +1,24 @@
 <template>
-    <b-table
-        class="table"
-        hover
-        bordered
-        responsive
-        stacked="xl"
-        :items="data"
-        :fields="columns"
-    >
-    </b-table>
+    <div>
+        <b-table
+            class="table"
+            hover
+            bordered
+            responsive
+            stacked="xl"
+            :items="data"
+            :fields="columns"
+            :per-page="itemsPerPage"
+            :current-page="currentPage"
+        >
+        </b-table>
+        <b-pagination
+            v-model="currentPage"
+            :total-rows="totalRows"
+            :per-page="itemsPerPage"
+        >
+        </b-pagination>
+    </div>
 </template>
 
 <script>
@@ -18,11 +28,13 @@ import fileheaders from "@/assets/config/fileheaders";
 export default {
     props: {
         data: Array,
-        page: Number,
-        totalPages: Number
+        page: Number
     },
     data() {
         return {
+            currentPage: this.page,
+            itemsPerPage: 10,
+            totalRows: this.data.length,
             columns: [
                 {
                     key: "blocktime",
@@ -71,6 +83,14 @@ export default {
         },
         formatFileheaders(value, key, item) {
             return fileheaders.fileheaders.find(fh => fh.value === value).text;
+        }
+    },
+    watch: {
+        currentPage(newValue) {
+            this.$emit("newPage", newValue);
+        },
+        data(newValue) {
+            this.totalRows = this.data.length;
         }
     }
 }

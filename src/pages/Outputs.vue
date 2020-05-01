@@ -4,7 +4,7 @@
             <SearchFilter :searchOptions="searchOptions" :isSearching="isSearching" @optionsChanged="optionsChanged" @search="searchClicked" />
         </card>
         <card>
-            <OutputTable :data="searchResults" :page="page" :totalPages="totalPages" />
+            <OutputTable :data="searchResults" :page="page" @newPage="newPage" />
         </card>
     </div>
 </template>
@@ -35,69 +35,61 @@ export default {
                 fileheaders: []
             },
             searchResults: [],
-            searchResultsNextPage: [],
             page: 1,
-            totalPages: 1,
             showErrorMessage: false,
             errorMessage: "We encountered an error. Please try again."
         }
     },
     async mounted() {
-        await this.search();
+        await this.search(this.page);
+        await this.search(this.page + 1);
     },
     methods: {
         optionsChanged(options) {
             this.searchOptions = options.searchOptions;
         },
-        async searchClicked() {
-            this.page = 1;
-            this.totalPages = 1;
-            await this.search();
+        async newPage(page) {
+            this.page = page;
+
+            if (this.page * 10  === this.searchResults.length) {
+                await this.search(this.page + 1);
+            }
         },
-        async search() {
+        async searchClicked() {
+            this.searchResults = [];
+            this.page = 1;
+            await this.search(this.page);
+            await this.search(this.page + 1);
+        },
+        async search(page) {
             this.isSearching = true;
 
             this.showErrorMessage = false;
             this.searchOptions.query = this.searchOptions.query.trim();
 
             if (this.isValidTxOrBlockHash(this.searchOptions.query)) {
-                await this.searchHash();
+                await this.searchHash(page);
             } else {
-                await this.searchContent();
+                await this.searchContent(page);
             }
 
             this.isSearching = false;
         },
-        async searchHash() {
+        async searchHash(page) {
             var searchParams = new URLSearchParams();
             searchParams.append("hash", this.searchOptions.query.toLowerCase());
-            searchParams.append("page", this.page);
+            searchParams.append("page", page);
 
             var endpoint = this.searchOptions.query.startsWith("00000") ? "blockhash" : "txhash";
 
-            // Wait for the first request
             var response = await axios.get(api.server + "/tx-outputs/" + endpoint + "?" + searchParams.toString());
             if (response.status == 200) {
-                this.searchResults = response.data;
+                this.searchResults = this.searchResults.concat(response.data);
             } else {
                 this.showErrorMessage = true;
             }
-
-            // Execute second request in background and update data afterwards
-            searchParams.set("page", Number(searchParams.get("page")) + 1);
-            var secondResponse = axios.get(api.server + "/tx-outputs/" + endpoint + "?" + searchParams.toString())
-                .then(response => {
-                    if (response.data.length > 0) {
-                        this.searchResultsNextPage = response.data;
-                    } else {
-                        this.searchResultsNextPage = [];
-                    }
-                })
-                .catch(error => {
-                    this.searchResultsNextPage = [];
-                });
         },
-        async searchContent() {
+        async searchContent(page) {
             var query = api.server + "/tx-outputs/search?";
             var nextQuery = query;
             var searchParams = new URLSearchParams();
@@ -121,8 +113,8 @@ export default {
                 searchParams.append("sort", "asc");
             }
 
-            if (this.page > 0) {
-                searchParams.append("page", this.page);
+            if (page > 0) {
+                searchParams.append("page", page);
             }
 
             query += searchParams.toString();
@@ -141,26 +133,12 @@ export default {
                 nextQuery += appendFh;
             }
 
-            // Wait for the first request
             var response = await axios.get(query);
             if (response.status == 200) {
-                this.searchResults = response.data;
+                this.searchResults = this.searchResults.concat(response.data);
             } else {
                 this.showErrorMessage = true;
             }
-
-            // Execute second request in background and update data afterwards
-            var secondResponse = axios.get(nextQuery)
-                .then(response => {
-                    if (response.data.length > 0) {
-                        this.searchResultsNextPage = response.data;
-                    } else {
-                        this.searchResultsNextPage = [];
-                    }
-                })
-                .catch(error => {
-                    this.searchResultsNextPage = [];
-                });
         },
         isEmptyOrSpaces(str) {
             return str === null || str.match(/^ *$/) !== null;
@@ -171,6 +149,8 @@ export default {
         isValidHexString(str) {
             return str.match(/^[A-Fa-f0-9]+/) !== null;
         }
+    },
+    watch: {
     }
 }
 </script>
