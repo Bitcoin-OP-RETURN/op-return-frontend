@@ -192,7 +192,7 @@ export default {
                 this.inputState = false;
                 this.searchDisabled = true;
                 this.inputMessage = "Enter at least 3 characters.";
-            } else if (!this.encodedInput && !this.inputText.match(/^[a-fA-F0-9]+$/)) {
+            } else if (this.inputText.length > 0 && !this.encodedInput && !this.inputText.match(/^[a-fA-F0-9]+$/)) {
                 this.inputState = false;
                 this.searchDisabled = true;
                 this.inputMessage = "Enter a hexadecimal string or switch to the encoded format."
