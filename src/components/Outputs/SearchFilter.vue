@@ -1,13 +1,26 @@
 <template>
     <b-form class="px-1">
         <b-input-group>
-            <b-form-input class="search-input border-input" :placeholder="inputPlaceholder"  /> <!-- class="border-input" -->
+            <b-form-input
+                :state="inputState"
+                :placeholder="inputPlaceholder"
+                v-model="inputText"
+                class="search-input border-input"
+            />
             <b-input-group-append>
-                <b-button class="btn-search no-text-transform" variant="success" @click="searchClicked">
+                <b-button
+                    class="btn-search no-text-transform"
+                    variant="success"
+                    @click="searchClicked"
+                    :disabled="searchDisabled"
+                >
                     <b-spinner small v-if="this.isSearching"></b-spinner>
                     Search
                 </b-button>
             </b-input-group-append>
+            <b-form-invalid-feedback id="input-feedback">
+                {{ inputMessage }}
+            </b-form-invalid-feedback>
         </b-input-group>
         <b-button-group class="btn-group">
             <b-button
@@ -141,6 +154,10 @@ export default {
         return {
             inputPlaceholders: ['Try with a transaction or block hash, or search terms like "bitcoin", "marry me", etc.', 'Try "bitcoin", "marry me", etc.'],
             inputPlaceholder: null,
+            inputText: "",
+            inputState: null,
+            inputMessage: "",
+            searchDisabled: false,
             minDate: this.searchOptions.minDate,
             maxDate: this.searchOptions.maxDate,
             encodedInput: this.searchOptions.encoded,
@@ -152,7 +169,7 @@ export default {
             protocolSelectionOptions: protocols.protocols,
             fileheaderSelectionButtonText: "All File Headers",
             fileheaderSelectionSelected: this.searchOptions.fileheaders,
-            fileheaderSelectionOptions: fileheaders.fileheaders
+            fileheaderSelectionOptions: fileheaders.fileheaders,
         }
     },
     mounted() {
@@ -168,6 +185,21 @@ export default {
                 this.inputPlaceholder = this.inputPlaceholders[1];
             } else {
                 this.inputPlaceholder = this.inputPlaceholders[0];
+            }
+        },
+        evaluateInput() {
+            if (this.inputText.length > 0 && this.inputText.length < 3) {
+                this.inputState = false;
+                this.searchDisabled = true;
+                this.inputMessage = "Enter at least 3 characters.";
+            } else if (!this.encodedInput && !this.inputText.match(/^[a-fA-F0-9]+$/)) {
+                this.inputState = false;
+                this.searchDisabled = true;
+                this.inputMessage = "Enter a hexadecimal string or switch to the encoded format."
+            } else {
+                this.inputState = null;
+                this.searchDisabled = false;
+                this.inputMessage = "";
             }
         },
         encodingClicked() {
@@ -195,6 +227,8 @@ export default {
             }
         },
         emitSearchOptions() {
+            this.evaluateInput();
+
             this.$emit("optionsChanged", {
                 searchOptions: {
                     minDate: this.minDate,
@@ -211,6 +245,9 @@ export default {
         }
     },
     watch: {
+        inputText(newValue) {
+            this.evaluateInput();
+        },
         minDate() {
             this.emitSearchOptions();
         },
