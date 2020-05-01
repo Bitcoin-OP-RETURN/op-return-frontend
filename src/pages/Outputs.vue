@@ -4,7 +4,7 @@
             <SearchFilter :searchOptions="searchOptions" :isSearching="isSearching" @optionsChanged="optionsChanged" @search="search" />
         </card>
         <card>
-            <OutputTable />
+            <OutputTable :data="searchResults" :page="page" :totalPages="totalPages" />
         </card>
     </div>
 </template>
@@ -66,7 +66,7 @@ export default {
         },
         async searchTxHash() {
             var searchParams = new URLSearchParams();
-            searchParams.append("hash", this.searchOptions.query);
+            searchParams.append("hash", this.searchOptions.query.toLowerCase());
             searchParams.append("page", this.page);
 
             // Wait for the first request
@@ -101,7 +101,7 @@ export default {
             return str === null || str.match(/^ *$/) !== null;
         },
         isValidTxOrBlockHash(str) {
-            return str.match(/^[a-f0-9]{64}$/i) !== null && str.length == 64; // https://stackoverflow.com/a/8868839/2102106
+            return str.match(/^[A-Fa-f0-9]{64}$/i) !== null && str.length == 64; // https://stackoverflow.com/a/8868839/2102106
         },
         isValidHexString(str) {
             return str.match(/^[A-Fa-f0-9]+/) !== null;
