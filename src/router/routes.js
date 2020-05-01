@@ -6,6 +6,7 @@ import NotFound from "@/pages/NotFoundPage.vue";
 import Dashboard from "@/pages/Dashboard.vue";
 import Outputs from "@/pages/Outputs.vue";
 import FileHeaders from "@/pages/FileHeaders.vue";
+import WordCloud from "@/pages/WordCloud.vue";
 import About from "@/pages/About.vue";
 
 const routes = [
@@ -28,6 +29,11 @@ const routes = [
         path: "fileheaders",
         name: "fileheaders",
         component: FileHeaders
+      },
+      {
+        path: "wordcloud",
+        name: "wordcloud",
+        component: WordCloud
       },
       {
         path: "about",
