@@ -24,7 +24,8 @@ export default {
                 {
                     key: "blocktime",
                     label: "Date",
-                    sortable: false
+                    sortable: false,
+                    formatter: this.formatDate
                 },
                 {
                     key: "outasm",
@@ -42,6 +43,11 @@ export default {
                     sortable: false
                 }
             ]
+        }
+    },
+    methods: {
+        formatDate(value, key, item) {
+            return new Date(value * 1000).toLocaleString();
         }
     }
 }
