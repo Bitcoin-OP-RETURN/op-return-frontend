@@ -39,12 +39,13 @@ import fileheaders from "@/assets/config/fileheaders";
 export default {
     props: {
         data: Array,
-        page: Number
+        page: Number,
+        itemsPerPage: Number
     },
     data() {
         return {
             currentPage: this.page,
-            itemsPerPage: 10,
+            localItemsPerPage: this.itemsPerPage,
             totalRows: this.data.length,
             columns: [
                 {
@@ -74,7 +75,18 @@ export default {
             ]
         }
     },
+    mounted() {
+        window.addEventListener("resize", this.windowWidthChanged);
+        this.windowWidthChanged(); // run once initially
+    },
     methods: {
+        windowWidthChanged(event) {
+            if (document.documentElement.clientWidth < 1200) {
+                this.localItemsPerPage = 3;
+            } else {
+                this.localItemsPerPage = 10;
+            }
+        },
         isValidHexString(str) {
             return str.match(/^[A-Fa-f0-9]+/) !== null;
         },
@@ -99,6 +111,9 @@ export default {
     watch: {
         currentPage(newValue) {
             this.$emit("newPage", newValue);
+        },
+        localItemsPerPage(newValue) {
+            this.$emit("itemsPerPageChanged", newValue);
         },
         data(newValue) {
             this.totalRows = this.data.length;

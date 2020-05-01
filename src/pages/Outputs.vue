@@ -4,7 +4,7 @@
             <SearchFilter :searchOptions="searchOptions" :isSearching="isSearching" @optionsChanged="optionsChanged" @search="searchClicked" />
         </card>
         <card>
-            <OutputTable :data="searchResults" :page="page" @newPage="newPage" />
+            <OutputTable :data="searchResults" :page="page" :itemsPerPage="itemsPerPage" @itemsPerPageChanged="itemsPerPageChanged" @newPage="newPage" />
         </card>
     </div>
 </template>
@@ -36,6 +36,7 @@ export default {
             },
             searchResults: [],
             page: 1,
+            itemsPerPage: 10,
             showErrorMessage: false,
             errorMessage: "We encountered an error. Please try again."
         }
@@ -51,9 +52,12 @@ export default {
         async newPage(page) {
             this.page = page;
 
-            if (this.page * 10  === this.searchResults.length) {
+            if (this.page * this.itemsPerPage  === this.searchResults.length) {
                 await this.search(this.page + 1);
             }
+        },
+        itemsPerPageChanged(itemsPerPage) {
+            this.itemsPerPage = itemsPerPage;
         },
         async searchClicked() {
             this.searchResults = [];
