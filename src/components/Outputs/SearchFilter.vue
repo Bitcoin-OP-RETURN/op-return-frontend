@@ -142,6 +142,7 @@ export default {
     props: {
         isSearching: Boolean,
         searchOptions: {
+            query: String,
             minDate: Date,
             maxDate: Date,
             encoded: Boolean,
@@ -154,7 +155,7 @@ export default {
         return {
             inputPlaceholders: ['Try with a transaction or block hash, or search terms like "bitcoin", "marry me", etc.', 'Try "bitcoin", "marry me", etc.'],
             inputPlaceholder: null,
-            inputText: "",
+            inputText: this.searchOptions.query,
             inputState: null,
             inputMessage: "",
             searchDisabled: false,
@@ -231,6 +232,7 @@ export default {
 
             this.$emit("optionsChanged", {
                 searchOptions: {
+                    query: this.inputText,
                     minDate: this.minDate,
                     maxDate: this.maxDate,
                     encoded: this.encodedInput,
@@ -247,6 +249,7 @@ export default {
     watch: {
         inputText(newValue) {
             this.evaluateInput();
+            this.emitSearchOptions();
         },
         minDate() {
             this.emitSearchOptions();
@@ -279,6 +282,7 @@ export default {
 
 .btn-search {
     font-size: 13px;
+    border-radius: 0px 5px 5px 0px !important;
 }
 
 .search-input {
