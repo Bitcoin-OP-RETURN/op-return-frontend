@@ -3,7 +3,10 @@
         <b-input-group>
             <b-form-input class="search-input border-input" :placeholder="inputPlaceholder"  /> <!-- class="border-input" -->
             <b-input-group-append>
-                <b-button class="btn-search no-text-transform" variant="success">Search</b-button>
+                <b-button class="btn-search no-text-transform" variant="success" @click="searchClicked">
+                    <b-spinner small v-if="this.isSearching"></b-spinner>
+                    Search
+                </b-button>
             </b-input-group-append>
         </b-input-group>
         <b-button-group class="btn-group">
@@ -123,28 +126,41 @@ export default {
     components: {
         DatePicker
     },
+    props: {
+        isSearching: Boolean,
+        searchOptions: {
+            minDate: Date,
+            maxDate: Date,
+            encoded: Boolean,
+            descending: Boolean,
+            protocols: Array,
+            fileheaders: Array
+        }
+    },
     data() {
         return {
             inputPlaceholders: ['Try with a transaction or block hash, or search terms like "bitcoin", "marry me", etc.', 'Try "bitcoin", "marry me", etc.'],
             inputPlaceholder: null,
-            minDate: new Date("2009-01-01"),
-            maxDate: new Date(),
-            encodedInput: true,
+            minDate: this.searchOptions.minDate,
+            maxDate: this.searchOptions.maxDate,
+            encodedInput: this.searchOptions.encoded,
             encodingButtonTexts: ["Hex", "Encoded"],
-            sortOrderDescending: true,
+            sortOrderDescending: this.searchOptions.descending,
             sortOrderButtonTexts: ["Ascending", "Descending"],
             protocolSelectionButtonText: "All Protocols",
-            protocolSelectionSelected: [],
+            protocolSelectionSelected: this.searchOptions.protocols,
             protocolSelectionOptions: protocols.protocols,
             fileheaderSelectionButtonText: "All File Headers",
-            fileheaderSelectionSelected: [],
+            fileheaderSelectionSelected: this.searchOptions.fileheaders,
             fileheaderSelectionOptions: fileheaders.fileheaders
         }
     },
     mounted() {
         window.addEventListener("resize", this.windowWidthChanged);
-
         this.windowWidthChanged(); // run once initially
+
+        this.changeProtocolSelectionText(this.protocolSelectionSelected);
+        this.changeFileHeaderSelectionText(this.fileheaderSelectionSelected);
     },
     methods: {
         windowWidthChanged(event) {
@@ -159,26 +175,61 @@ export default {
         },
         sortOrderClicked() {
             this.sortOrderDescending = !this.sortOrderDescending;
-        }
-    },
-    watch: {
-        protocolSelectionSelected(newValue) {
-            if (newValue.length == 1) {
+        },
+        changeProtocolSelectionText(selected) {
+            if (selected.length == 1) {
                 this.protocolSelectionButtonText = "1 Protocol";
-            } else if (newValue.length > 1) {
-                this.protocolSelectionButtonText = newValue.length + " Protocols";
+            } else if (selected.length > 1) {
+                this.protocolSelectionButtonText = selected.length + " Protocols";
             } else {
                 this.protocolSelectionButtonText = "All Protocols";
             }
         },
-        fileheaderSelectionSelected(newValue) {
-            if (newValue.length == 1) {
+        changeFileHeaderSelectionText(selected) {
+            if (selected.length == 1) {
                 this.fileheaderSelectionButtonText = "1 File Header";
-            } else if (newValue.length > 1) {
-                this.fileheaderSelectionButtonText = newValue.length + " File Headers";
+            } else if (selected.length > 1) {
+                this.fileheaderSelectionButtonText = selected.length + " File Headers";
             } else {
                 this.fileheaderSelectionButtonText = "All File Headers";
             }
+        },
+        emitSearchOptions() {
+            this.$emit("optionsChanged", {
+                searchOptions: {
+                    minDate: this.minDate,
+                    maxDate: this.maxDate,
+                    encoded: this.encodedInput,
+                    descending: this.sortOrderDescending,
+                    protocols: this.protocolSelectionSelected,
+                    fileheaders: this.fileheaderSelectionSelected
+                }
+            })
+        },
+        searchClicked() {
+            this.$emit("search");
+        }
+    },
+    watch: {
+        minDate() {
+            this.emitSearchOptions();
+        },
+        maxDate() {
+            this.emitSearchOptions();
+        },
+        encodedInput() {
+            this.emitSearchOptions();
+        },
+        sortOrderDescending() {
+            this.emitSearchOptions();
+        },
+        protocolSelectionSelected(newValue) {
+            this.changeProtocolSelectionText(newValue);
+            this.emitSearchOptions();
+        },
+        fileheaderSelectionSelected(newValue) {
+            this.changeFileHeaderSelectionText(newValue);
+            this.emitSearchOptions();
         }
     }
 }

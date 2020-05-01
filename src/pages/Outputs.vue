@@ -1,7 +1,7 @@
 <template>
     <div>
         <card title="Explore the world of OP_RETURN" subTitle="You can search for any transaction, block, or even content">
-            <SearchFilter />
+            <SearchFilter :searchOptions="searchOptions" :isSearching="isSearching" @optionsChanged="optionsChanged" @search="search" />
         </card>
         <card>
             <OutputTable />
@@ -22,7 +22,27 @@ export default {
     },
     data() {
         return {
+            isSearching: false,
+            searchOptions: {
+                minDate: new Date("2009-01-01"),
+                maxDate: new Date(),
+                encoded: true,
+                descending: true,
+                protocols: [],
+                fileheaders: []
+            }
+        }
+    },
+    methods: {
+        optionsChanged(options) {
+            this.searchOptions = options;
+        },
+        search() {
+            this.isSearching = true;
 
+
+
+            this.isSearching = false;
         }
     }
 }
