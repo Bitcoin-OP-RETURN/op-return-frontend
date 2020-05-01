@@ -13,10 +13,21 @@
         >
         </b-table>
         <b-pagination
+            :pills="true"
             v-model="currentPage"
             :total-rows="totalRows"
             :per-page="itemsPerPage"
+            align="center"
         >
+            <template v-slot:first-text><i class="fas fa-angle-double-left text-dark"></i></template>
+            <template v-slot:prev-text><i class="fas fa-angle-left text-dark"></i></template>
+            <template v-slot:next-text><i class="fas fa-angle-right text-dark"></i></template>
+            <template v-slot:last-text><i class="fas fa-angle-double-right text-dark"></i></template>
+            <template v-slot:ellipsis-text><i class="fas fa-ellipsis-h text-dark"></i></template>
+            <template v-slot:page="{ page, active }">
+                <b v-if="active">{{ page }}</b>
+                <span v-else>{{ page }}</span>
+            </template>
         </b-pagination>
     </div>
 </template>
