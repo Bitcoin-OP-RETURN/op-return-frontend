@@ -24,7 +24,7 @@
         </b-input-group>
         <b-button-group class="btn-group">
             <b-button
-                class="btn no-text-transform"
+                class="btn btn-first no-text-transform"
                 variant="outline-primary"
                 v-b-modal.modal-min-date
             >
@@ -309,6 +309,10 @@ export default {
         width: 100%;
         border-radius: 0px;
         margin-bottom: 5px;
+
+        &-first {
+            left: -2px;
+        }
     }
   }
 }
