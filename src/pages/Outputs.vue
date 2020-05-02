@@ -1,10 +1,21 @@
 <template>
     <div>
         <card title="Explore the world of OP_RETURN" subTitle="You can search for any transaction, block, or even content">
-            <SearchFilter :searchOptions="searchOptions" :isSearching="isSearching" @optionsChanged="optionsChanged" @search="searchClicked" />
-        </card>
-        <card>
-            <OutputTable :data="searchResults" :page="page" :itemsPerPage="itemsPerPage" @itemsPerPageChanged="itemsPerPageChanged" @newPage="newPage" />
+            <SearchFilter
+                :searchOptions="searchOptions"
+                :isSearching="isSearching"
+                @optionsChanged="optionsChanged"
+                @search="searchClicked"
+            />
+            <OutputTable
+                class="px-1 pt-1"
+                :data="searchResults"
+                :page="page"
+                :itemsPerPage="itemsPerPage"
+                :isSearching="isSearching"
+                @itemsPerPageChanged="itemsPerPageChanged"
+                @newPage="newPage"
+            />
         </card>
     </div>
 </template>
@@ -42,8 +53,8 @@ export default {
         }
     },
     async mounted() {
-        await this.search(this.page);
-        await this.search(this.page + 1);
+        await this.search(this.page, true);
+        await this.search(this.page + 1, false);
     },
     methods: {
         optionsChanged(options) {
@@ -53,7 +64,7 @@ export default {
             this.page = page;
 
             if (this.page * this.itemsPerPage  === this.searchResults.length) {
-                await this.search(this.page + 1);
+                await this.search(this.page + 1, false);
             }
         },
         itemsPerPageChanged(itemsPerPage) {
@@ -62,11 +73,13 @@ export default {
         async searchClicked() {
             this.searchResults = [];
             this.page = 1;
-            await this.search(this.page);
-            await this.search(this.page + 1);
+            await this.search(this.page, true);
+            await this.search(this.page + 1, false);
         },
-        async search(page) {
-            this.isSearching = true;
+        async search(page, showLoader) {
+            if (showLoader) {
+                this.isSearching = true;
+            }
 
             this.showErrorMessage = false;
             this.searchOptions.query = this.searchOptions.query.trim();
@@ -77,7 +90,9 @@ export default {
                 await this.searchContent(page);
             }
 
-            this.isSearching = false;
+            if (showLoader) {
+                this.isSearching = false;
+            }
         },
         async searchHash(page) {
             var searchParams = new URLSearchParams();

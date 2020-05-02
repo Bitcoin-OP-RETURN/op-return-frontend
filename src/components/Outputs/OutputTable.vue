@@ -10,7 +10,14 @@
             :fields="columns"
             :per-page="itemsPerPage"
             :current-page="currentPage"
+            :busy="isSearching"
         >
+            <template v-slot:table-busy>
+                <div class="text-center text-danger my-2">
+                    <b-spinner type="grow" class="align-middle"></b-spinner>
+                    <strong class="pl-2">Loading...</strong>
+                </div>
+            </template>
         </b-table>
         <b-pagination
             :pills="true"
@@ -40,7 +47,8 @@ export default {
     props: {
         data: Array,
         page: Number,
-        itemsPerPage: Number
+        itemsPerPage: Number,
+        isSearching: Boolean
     },
     data() {
         return {
@@ -82,7 +90,7 @@ export default {
     methods: {
         windowWidthChanged(event) {
             if (document.documentElement.clientWidth < 1200) {
-                this.localItemsPerPage = 3;
+                this.localItemsPerPage = 5;
             } else {
                 this.localItemsPerPage = 10;
             }

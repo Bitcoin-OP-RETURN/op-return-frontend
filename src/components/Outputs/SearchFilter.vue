@@ -14,7 +14,7 @@
                     @click="searchClicked"
                     :disabled="searchDisabled"
                 >
-                    <b-spinner small v-if="this.isSearching"></b-spinner>
+                    <b-spinner small type="grow" v-if="this.isSearching" class="mr-2"></b-spinner>
                     Search
                 </b-button>
             </b-input-group-append>
