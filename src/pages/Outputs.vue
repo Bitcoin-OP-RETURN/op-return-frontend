@@ -103,7 +103,12 @@ export default {
 
             var response = await axios.get(api.server + "/tx-outputs/" + endpoint + "?" + searchParams.toString());
             if (response.status == 200) {
-                this.searchResults = this.searchResults.concat(response.data);
+                var addThis = response.data;
+                for (var i in addThis) {
+                    addThis[i]._showDetails = false;
+                }
+
+                this.searchResults = this.searchResults.concat(addThis);
             } else {
                 this.showErrorMessage = true;
             }
@@ -154,7 +159,12 @@ export default {
 
             var response = await axios.get(query);
             if (response.status == 200) {
-                this.searchResults = this.searchResults.concat(response.data);
+                var addThis = response.data;
+                for (var i in addThis) {
+                    addThis[i]._showDetails = false;
+                }
+
+                this.searchResults = this.searchResults.concat(addThis);
             } else {
                 this.showErrorMessage = true;
             }
@@ -168,8 +178,6 @@ export default {
         isValidHexString(str) {
             return str.match(/^[A-Fa-f0-9]+/) !== null;
         }
-    },
-    watch: {
     }
 }
 </script>

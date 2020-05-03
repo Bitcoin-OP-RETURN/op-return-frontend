@@ -11,12 +11,35 @@
             :per-page="itemsPerPage"
             :current-page="currentPage"
             :busy="isSearching"
+            @row-clicked="rowClicked"
         >
             <template v-slot:table-busy>
                 <div class="text-center text-danger my-2">
                     <b-spinner type="grow" class="align-middle"></b-spinner>
                     <strong class="pl-2">Loading...</strong>
                 </div>
+            </template>
+
+            <template slot="row-details" slot-scope="row">
+                <b-row class="mb-2">
+                    <b-col sm="2" class="text-sm-right"><b>Transaction Hash:</b></b-col>
+                    <b-col>{{ row.item.txhash }}</b-col>
+                </b-row>
+
+                <b-row class="mb-2">
+                    <b-col sm="2" class="text-sm-right"><b>Block Hash:</b></b-col>
+                    <b-col>{{ row.item.blockhash }}</b-col>
+                </b-row>
+
+                <b-row class="mb-2">
+                    <b-col sm="2" class="text-sm-right"><b>Script:</b></b-col>
+                    <b-col>{{ row.item.outasm }}</b-col>
+                </b-row>
+
+                <b-row class="mb-2">
+                    <b-col sm="2" class="text-sm-right"><b>Output Value:</b></b-col>
+                    <b-col>{{ row.item.outvalue }} BTC</b-col>
+                </b-row>
             </template>
         </b-table>
         <b-pagination
@@ -114,6 +137,10 @@ export default {
         },
         formatFileheaders(value, key, item) {
             return fileheaders.fileheaders.find(fh => fh.value === value).text;
+        },
+        rowClicked(row) {
+            row._showDetails = !row._showDetails;
+            console.log(row);
         }
     },
     watch: {
