@@ -23,12 +23,26 @@
             <template slot="row-details" slot-scope="row">
                 <b-row class="mb-2">
                     <b-col sm="2" class="text-sm-right"><b>Transaction Hash:</b></b-col>
-                    <b-col>{{ row.item.txhash }}</b-col>
+                    <b-col>
+                        <b-link
+                            :href="`https://www.blockchain.com/btc/tx/${row.item.txhash}`"
+                            target="_blank"
+                        >
+                            {{ row.item.txhash }}
+                        </b-link>
+                    </b-col>
                 </b-row>
 
                 <b-row class="mb-2">
                     <b-col sm="2" class="text-sm-right"><b>Block Hash:</b></b-col>
-                    <b-col>{{ row.item.blockhash }}</b-col>
+                    <b-col>
+                        <b-link
+                            :href="`https://www.blockchain.com/btc/block/${row.item.blockhash}`"
+                            target="_blank"
+                        >
+                            {{ row.item.blockhash }}
+                        </b-link>
+                    </b-col>
                 </b-row>
 
                 <b-row class="mb-2">
