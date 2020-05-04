@@ -29,6 +29,7 @@
                             target="_blank"
                         >
                             {{ row.item.txhash }}
+                            <i class="fas fa-external-link-alt ml-1"></i>
                         </b-link>
                     </b-col>
                 </b-row>
@@ -41,6 +42,7 @@
                             target="_blank"
                         >
                             {{ row.item.blockhash }}
+                            <i class="fas fa-external-link-alt ml-1"></i>
                         </b-link>
                     </b-col>
                 </b-row>
