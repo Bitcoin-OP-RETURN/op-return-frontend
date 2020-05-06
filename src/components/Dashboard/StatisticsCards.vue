@@ -73,16 +73,10 @@ export default {
         var self = this;
 
         try {
-            let statsResponse = await axios.get(api.server + "/tx-outputs/stats")
-            if (statsResponse.status == 200) {
-                this.updateStatsCards(statsResponse.data);
-            } else {
-                console.log(statsResponse.statusText);
-            }
+            await this.refreshStats();
         } catch (err) {
             console.log(err)
         } finally {
-            var self = this;
             this.refreshHandler = window.setInterval(() => {
                 self.refreshStats();
             }, 30000);
