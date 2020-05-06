@@ -33,6 +33,7 @@ import { Card } from "@/components/index";
 import Highcharts from "highcharts";
 import axios from "axios";
 import api from "@/assets/config/api.js";
+import protocols from "@/assets/config/protocols.js";
 import moment from "moment";
 import DatePicker from "vue2-datepicker";
 import 'vue2-datepicker/index.css';
@@ -198,10 +199,13 @@ export default {
             // add all props to the series with an initial value of 0
             for (var propName in data[0]) {
                 if (!(propName == "id" || propName == "dataday")) {
-                    series[0]["data"].push({
-                        name: propName,
-                        y: 0
-                    });
+                    var displayName = protocols.protocols.find(x => x.value === propName);
+                    if (displayName && displayName.text) {
+                        series[0]["data"].push({
+                            name: displayName.text,
+                            y: 0
+                        });
+                    }
                 }
             }
 
@@ -210,7 +214,10 @@ export default {
                 if (dataday.isSameOrAfter(moment(this.datePickerRange[0]), 'day') && dataday.isSameOrBefore(moment(this.datePickerRange[1]), 'day')) {
                     for (var propName in day) {
                         if (!(propName == "id" || propName == "dataday")) {
-                            series[0]["data"].find(obj => { return obj.name == propName }).y += day[propName];
+                            var displayName = protocols.protocols.find(x => x.value === propName);
+                            if (displayName && displayName.text) {
+                                series[0]["data"].find(obj => { return obj.name == displayName.text }).y += day[propName];
+                            }
                         }
                     }
                 }
