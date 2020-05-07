@@ -26,7 +26,7 @@ export default {
         { text: "SmartBit", value: "smartbit" },
         { text: "Stampd", value: "stampd" },
         { text: "Stampery", value: "stampery" },
-        { text: "Nicosia", value: "universityofnicosia" },
+        { text: "University of Nicosia", value: "universityofnicosia" },
         { text: "VeriBlock", value: "veriblock" },
     ]
 }

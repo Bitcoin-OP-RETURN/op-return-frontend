@@ -145,8 +145,8 @@ export default {
                 item.outtype === "nulldata" ?
                     item.protocol === "emptytx" ? item.outasm :
                         this.isValidHexString(item.outasm.split(" ").pop()) ?
-                            new Buffer(item.outasm.split(" ").pop(), "hex").toString() : item.outasm
-                        : item.outasm;
+                        this.tryConvertToUtf(item.outasm.split(" ").pop()) : item.outasm
+                    : item.outasm;
         },
         formatProtocol(value, key, item) {
             return protocols.protocols.find(prot => prot.value === value).text;
@@ -154,9 +154,16 @@ export default {
         formatFileheaders(value, key, item) {
             return fileheaders.fileheaders.find(fh => fh.value === value).text;
         },
+        tryConvertToUtf(str) {
+            try {
+                return new Buffer(str, "hex").toString();
+            }
+            catch {
+                return str;
+            }
+        },
         rowClicked(row) {
             row._showDetails = !row._showDetails;
-            console.log(row);
         }
     },
     watch: {
