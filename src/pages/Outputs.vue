@@ -64,7 +64,12 @@ export default {
             this.page = page;
 
             if (this.page * this.itemsPerPage  === this.searchResults.length) {
-                await this.search(this.page + 1, false);
+                if (this.itemsPerPage === 10) {
+                    await this.search(this.page + 1, false);
+                }
+                else if (this.itemsPerPage === 5) {
+                    await this.search(this.page / 2 + 1, false);
+                }
             }
         },
         itemsPerPageChanged(itemsPerPage) {
