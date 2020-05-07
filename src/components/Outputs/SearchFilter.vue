@@ -1,11 +1,13 @@
 <template>
-    <b-form class="px-1">
+    <b-form class="px-1" v-on:submit.prevent="doAbsolutelyNothing">
         <b-input-group>
             <b-form-input
                 :state="inputState"
                 :placeholder="inputPlaceholder"
                 v-model="inputText"
                 class="search-input border-input"
+                @keyup="keyPressed"
+                ref="searchbar"
             />
             <b-input-group-append>
                 <b-button
@@ -179,6 +181,8 @@ export default {
 
         this.changeProtocolSelectionText(this.protocolSelectionSelected);
         this.changeFileHeaderSelectionText(this.fileheaderSelectionSelected);
+
+        this.$refs.searchbar.$el.focus();
     },
     methods: {
         windowWidthChanged(event) {
@@ -244,6 +248,14 @@ export default {
         },
         searchClicked() {
             this.$emit("search");
+        },
+        doAbsolutelyNothing() {
+            // preventing form submission
+        },
+        keyPressed: function(e) {
+            if (e.keyCode === 13) { // 13 = enter
+                this.searchClicked();
+            }
         }
     },
     watch: {
