@@ -56,6 +56,15 @@
                     <b-col sm="2" class="text-sm-right"><b>Output Value:</b></b-col>
                     <b-col>{{ row.item.outvalue }} BTC</b-col>
                 </b-row>
+
+                <b-row class="mb-2" v-if="getProtocolLink(row.item.protocol)">
+                    <b-col sm="2" class="text-sm-right"><b>Protocol:</b></b-col>
+                    <b-col>
+                        <b-link :href="`${ getProtocolLink(row.item.protocol) }`" target="_blank">
+                            {{ getProtocolLink(row.item.protocol) }}
+                        </b-link>
+                    </b-col>
+                </b-row>
             </template>
         </b-table>
         <b-pagination
@@ -164,6 +173,9 @@ export default {
         },
         rowClicked(row) {
             row._showDetails = !row._showDetails;
+        },
+        getProtocolLink(protocol) {
+            return protocols.protocols.find(prot => prot.value === protocol).url;
         }
     },
     watch: {
