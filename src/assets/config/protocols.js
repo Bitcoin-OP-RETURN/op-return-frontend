@@ -19,7 +19,7 @@ export default {
         { text: "OpenAssets", value: "openassets" },
         { text: "Openchain", value: "openchain" },
         { text: "OriginalMy", value: "originalmy" },
-        { text: "Pixsy / Binded / Pixsy", value: "blockaibindedpixsy" },
+        { text: "Pixsy / Binded / Blockai", value: "blockaibindedpixsy" },
         { text: "Proof of Existence", value: "proofofexistence" },
         { text: "ProveBit", value: "provebit" },
         { text: "Remembr", value: "remembr" },
