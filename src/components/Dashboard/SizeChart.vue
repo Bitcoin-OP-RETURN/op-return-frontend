@@ -47,7 +47,7 @@ export default {
                     allowDecimals: false,
                     labels: {
                         formatter: function() {
-                            return this.value + " bytes";
+                            return this.value.toLocaleString() + " bytes";
                         }
                     },
                     plotLines: [

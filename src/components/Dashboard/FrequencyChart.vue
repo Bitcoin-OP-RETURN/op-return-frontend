@@ -44,7 +44,7 @@ export default {
                     allowDecimals: false,
                     labels: {
                         formatter: function() {
-                        return this.value;
+                            return this.value.toLocaleString();
                         }
                     },
                     plotLines: [
