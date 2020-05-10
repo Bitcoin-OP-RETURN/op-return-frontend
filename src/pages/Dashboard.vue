@@ -11,10 +11,16 @@
 
     <div class="row">
       <div class="col-md-6 col-12">
-        <ProtocolChart />
+        <SizeChart />
       </div>
       <div class="col-md-6 col-12">
-        <SizeChart />
+        <ProtocolChart />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <ProtocolLineChart />
       </div>
     </div>
 
@@ -26,13 +32,15 @@ import StatisticsCards from "@/components/Dashboard/StatisticsCards";
 import FrequencyChart from "@/components/Dashboard/FrequencyChart";
 import ProtocolChart from "@/components/Dashboard/ProtocolChart";
 import SizeChart from "@/components/Dashboard/SizeChart";
+import ProtocolLineChart from "@/components/Dashboard/ProtocolLineChart";
 
 export default {
   components: {
     StatisticsCards,
     FrequencyChart,
     ProtocolChart,
-    SizeChart
+    SizeChart,
+    ProtocolLineChart
   },
   data() {
     return {

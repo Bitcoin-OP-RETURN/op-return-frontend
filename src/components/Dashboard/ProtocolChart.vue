@@ -123,7 +123,7 @@ export default {
                     }
                 },
                 exporting: {
-                    enabled: false,
+                    enabled: true,
                     buttons: {
                         contextButton: {
                             text: "",
