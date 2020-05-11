@@ -1,5 +1,5 @@
 <template>
-    <card title="OP_RETURN Output Size" subTitle="The average size of outputs using the operator">
+    <card title="OP_RETURN Output Size" subTitle="The daily average size of outputs using the operator">
         <div class="card-body">
             <highcharts
                 v-if="sizeChartSeries.length > 0"

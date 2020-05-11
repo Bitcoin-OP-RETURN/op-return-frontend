@@ -1,5 +1,5 @@
 <template>
-    <card title="OP_RETURN Protocols" subTitle="Publicly known protocols using the operator">
+    <card title="OP_RETURN Protocols usage per day" subTitle="Publicly known protocols using the operator per day">
         <div class="card-body">
             <highcharts
                 v-if="protocolChartSeries.length > 0"
