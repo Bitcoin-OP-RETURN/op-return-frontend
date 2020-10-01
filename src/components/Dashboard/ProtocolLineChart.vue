@@ -68,7 +68,7 @@ export default {
                 },
                 plotOptions: {
                     series: {
-                        stacking: "normal" // "normal" for normal stacking, "percent" for 100% stacking
+                        //stacking: "normal" // "normal" for normal stacking, "percent" for 100% stacking
                     }
                 },
                 legend: {
